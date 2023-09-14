@@ -1,0 +1,3 @@
+"C:\Program Files\CMake\bin\cmake.exe" -E rm -f CMakeFiles\PineKey.dir/objects.a
+C:\Pine\mingw64\bin\ar.exe qc CMakeFiles\PineKey.dir/objects.a @CMakeFiles\PineKey.dir\objects1.rsp
+C:\Pine\mingw64\bin\g++.exe -Os -DNDEBUG -Wl,--whole-archive CMakeFiles\PineKey.dir/objects.a -Wl,--no-whole-archive -o PineKey.exe -Wl,--out-implib,libPineKey.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\PineKey.dir\linkLibs.rsp
