@@ -4,9 +4,8 @@ cmake_minimum_required(VERSION 3.10)
 
 project(PineKey)
 
-# SDL2 paths
-set(SDL2_INCLUDE_DIR C:/Pine/Prog/PineKey/include/SDL2)
 set(SDL2_LIBRARY C:/Pine/Prog/PineKey/bin/SDL2.dll)
+set(GLFW_LIBRARY C:/Pine/Prog/PineKey/lib/glfw3.dll)
 
 # imgui paths
 set(IMGUI_DIR C:/Pine/Prog/PineKey/imgui-master)
@@ -17,14 +16,15 @@ set(IMGUI_SOURCES
     ${IMGUI_DIR}/imgui_draw.cpp
     ${IMGUI_DIR}/imgui_widgets.cpp
     ${IMGUI_DIR}/imgui_tables.cpp
-    ${IMGUI_DIR}/backends/imgui_impl_sdl2.cpp
+    ${IMGUI_DIR}/imgui_demo.cpp
     ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp
+    ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp
 )
 
 add_executable(${PROJECT_NAME} main.cpp KeyHook.cpp ${IMGUI_SOURCES})
 
-include_directories(${SDL2_INCLUDE_DIR} ${IMGUI_DIR} ${IMGUI_DIR}/backends)
+include_directories(C:/Pine/Prog/PineKey/include/ ${IMGUI_DIR} ${IMGUI_DIR}/backends)
     
-target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARY} opengl32.lib)
+target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARY} ${GLFW_LIBRARY} opengl32.lib gdi32.lib shell32.lib)
 
 # TODO: Additional setup if needed

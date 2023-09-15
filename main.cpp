@@ -1,130 +1,154 @@
-    #define SDL_MAIN_HANDLED
-    #include <SDL.h>
-    #include <iostream>
-    #include <imgui_impl_sdl2.h>
-    #include <imgui_impl_opengl3.h>
-    #include <gl/gl.h>
+// Dear ImGui: standalone example application for GLFW + OpenGL 3, using programmable pipeline
+// (GLFW is a cross-platform general purpose library for handling windows, inputs, OpenGL/Vulkan/Metal graphics context creation, etc.)
 
-    void SetGlobalHook();
-    void RemoveGlobalHook();
+// Learn about Dear ImGui:
+// - FAQ                  https://dearimgui.com/faq
+// - Getting Started      https://dearimgui.com/getting-started
+// - Documentation        https://dearimgui.com/docs (same as your local docs/ folder).
+// - Introduction, links and more at the top of imgui.cpp
 
-    static int t_button_count = 0;
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+#include <stdio.h>
+#include <GLFW/glfw3.h>
 
-    int main(int argc, char* argv[]) 
-    {  
-        SDL_SetMainReady();
+static void glfw_error_callback(int error, const char* description)
+{
+    fprintf(stderr, "GLFW Error %d: %s\n", error, description);
+}
 
-        SetGlobalHook();
+int main(int, char**)
+{
+    glfwSetErrorCallback(glfw_error_callback);
+    // 初始化
+    if (!glfwInit())
+        return 1;
 
-        // 初始化SDL
-        if (SDL_Init(SDL_INIT_VIDEO) < 0) 
-        {
-            std::cerr << "SDL could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
-            return 1;
-        }
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); //主版本号，当API以不兼容的方式更改时，该值会增加。
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3); //次版本号，当特性被添加到API中时，它会增加，但是它保持向后兼容。
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); //使用核心模式
 
-        SDL_Window* window = SDL_CreateWindow("Controller Input Display", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 600, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_KEYBOARD_GRABBED);
-
-        if (!window) 
-        {
-            std::cerr << "Window could not be created! SDL_Error: " << SDL_GetError() << std::endl;
-            SDL_Quit();
-            return 1;
-        }
-
-        SDL_GLContext gl_context = SDL_GL_CreateContext(window);
-        
-        // 初始化imgui
-        IMGUI_CHECKVERSION();
-        ImGui::CreateContext();
-        ImGuiIO& io = ImGui::GetIO(); (void)io;
-        ImGui::StyleColorsDark();
-
-        // 初始化imgui的SDL2和OpenGL3渲染器
-        ImGui_ImplSDL2_InitForOpenGL(window, gl_context);
-        ImGui_ImplOpenGL3_Init();
-
-        std::cout<<"program start."<<std::endl;
-
-        bool quit = false;
-        bool pressed = false;
-
-        SDL_Event e;
-        while (!quit) 
-        {
-            while (SDL_PollEvent(&e)) 
-            {
-                switch (e.type) 
-                {
-                    case SDL_QUIT:
-                        quit = true;
-                        break;
-                    case SDL_KEYDOWN:
-                        if (e.key.keysym.scancode == SDL_SCANCODE_T && e.key.repeat == 0) 
-                        {
-                            t_button_count++;
-                            pressed = true;
-                        }
-                        break;
-                    case SDL_KEYUP:
-                        if (e.key.keysym.scancode == SDL_SCANCODE_T) 
-                        {
-                            pressed = false;
-                        }
-                        break;
-                    default:
-                        // 将事件传递给imgui
-                        ImGui_ImplSDL2_ProcessEvent(&e);
-                        break;
-                }
-
-            }
-
-            // 开始imgui帧
-            ImGui_ImplOpenGL3_NewFrame();
-            ImGui_ImplSDL2_NewFrame(window);
-            ImGui::NewFrame();  
-
-            // imgui主循环
-            ImGui::Begin("Controller Input Display");
-
-            // 示例：显示键盘按键T的状态
-            if (pressed) 
-            {
-                ImGui::TextColored(ImVec4(1,0,0,1), "T Button: Pressed");
-            } 
-            else 
-            {
-                ImGui::Text("T Button: Not Pressed");
-            }
-
-            // 在UI中显示计数
-            ImGui::Text("T Button Count: %d", t_button_count);
-
-            // ... 为其他按键重复此过程
-            ImGui::End();
-            
-            // 清除背景
-            glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-            glClear(GL_COLOR_BUFFER_BIT);
-
-            // 渲染imgui
-            ImGui::Render();
-            ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-            SDL_GL_SwapWindow(window);
-        }
-
-        // 清理imgui
-        ImGui_ImplOpenGL3_Shutdown();
-        ImGui_ImplSDL2_Shutdown();
-        ImGui::DestroyContext();
-
-        // 清理SDL代码 ..
-        SDL_GL_DeleteContext(gl_context);
-        SDL_DestroyWindow(window);
-        SDL_Quit();
-
-        RemoveGlobalHook();
-        
-        return 0;
+    const char* title = "PineKey";
+    // 创建图形上下文窗口
+    // glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
+    GLFWwindow* window = glfwCreateWindow(1280, 720, title, nullptr, nullptr);
+    if (window == nullptr){
+        fprintf(stderr, "Error with create graphics content window.\n");
+        return 1;
     }
+    glfwMakeContextCurrent(window);
+    glfwSwapInterval(1); // 允许垂直同步
+
+    // 设置imgui上下文
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // 允许键盘控制
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // 允许Gamepad控制
+
+    // 设置imgui风格
+    ImGui::StyleColorsDark();
+    //ImGui::StyleColorsLight();
+
+    // 设置平台、渲染器后端
+    const char* glsl_version = "#version 150";
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init(glsl_version);
+
+    // Load Fonts
+    // - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.
+    // - AddFontFromFileTTF() will return the ImFont* so you can store it if you need to select the font among multiple.
+    // - If the file cannot be loaded, the function will return a nullptr. Please handle those errors in your application (e.g. use an assertion, or display an error and quit).
+    // - The fonts will be rasterized at a given size (w/ oversampling) and stored into a texture when calling ImFontAtlas::Build()/GetTexDataAsXXXX(), which ImGui_ImplXXXX_NewFrame below will call.
+    // - Use '#define IMGUI_ENABLE_FREETYPE' in your imconfig file to use Freetype for higher quality font rendering.
+    // - Read 'docs/FONTS.md' for more instructions and details.
+    // - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
+    // - Our Emscripten build process allows embedding fonts to be accessible at runtime from the "fonts/" folder. See Makefile.emscripten for details.
+    //io.Fonts->AddFontDefault();
+    //io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\segoeui.ttf", 18.0f);
+    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);
+    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf", 16.0f);
+    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
+    //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());
+    //IM_ASSERT(font != nullptr);
+
+    // Our state
+    bool show_demo_window = true;
+    bool show_another_window = false;
+    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+
+    // 主循环
+    while (!glfwWindowShouldClose(window))
+    {
+        // Poll and handle events (inputs, window resize, etc.)
+        // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
+        // - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application, or clear/overwrite your copy of the mouse data.
+        // - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application, or clear/overwrite your copy of the keyboard data.
+        // Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
+        glfwPollEvents();
+
+        // Start the Dear ImGui frame
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+        // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
+        if (show_demo_window)
+            ImGui::ShowDemoWindow(&show_demo_window);
+
+        // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
+        {
+            static float f = 0.0f;
+            static int counter = 0;
+
+            ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+
+            ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+            ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
+            ImGui::Checkbox("Another Window", &show_another_window);
+
+            ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+            ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
+
+            if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+                counter++;
+            ImGui::SameLine();
+            ImGui::Text("counter = %d", counter);
+
+            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+            ImGui::End();
+        }
+
+        // 3. Show another simple window.
+        if (show_another_window)
+        {
+            ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+            ImGui::Text("Hello from another window!");
+            if (ImGui::Button("Close Me"))
+                show_another_window = false;
+            ImGui::End();
+        }
+
+        // Rendering
+        ImGui::Render();
+        int display_w, display_h;
+        glfwGetFramebufferSize(window, &display_w, &display_h);
+        glViewport(0, 0, display_w, display_h);
+        glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
+        glClear(GL_COLOR_BUFFER_BIT);
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+        glfwSwapBuffers(window);
+    }
+
+    // 清理
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+
+    glfwDestroyWindow(window);
+    glfwTerminate();
+
+    return 0;
+}

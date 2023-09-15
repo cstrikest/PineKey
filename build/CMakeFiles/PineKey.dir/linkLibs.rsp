@@ -1,1 +1,1 @@
- C:/Pine/Prog/PineKey/bin/SDL2.dll -lopengl32 -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 
+ C:/Pine/Prog/PineKey/bin/SDL2.dll C:/Pine/Prog/PineKey/lib/glfw3.dll -lopengl32 -lgdi32 -lshell32 -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 

@@ -59,7 +59,7 @@
 			[
 				{
 					"backtrace" : 3,
-					"path" : "C:/Pine/Prog/PineKey/include/SDL2"
+					"path" : "C:/Pine/Prog/PineKey/include"
 				},
 				{
 					"backtrace" : 3,
@@ -80,7 +80,8 @@
 				4,
 				5,
 				6,
-				7
+				7,
+				8
 			]
 		}
 	],
@@ -104,7 +105,22 @@
 			},
 			{
 				"backtrace" : 2,
+				"fragment" : "C:\\Pine\\Prog\\PineKey\\lib\\glfw3.dll",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
 				"fragment" : "-lopengl32",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "-lgdi32",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "-lshell32",
 				"role" : "libraries"
 			},
 			{
@@ -134,7 +150,8 @@
 				4,
 				5,
 				6,
-				7
+				7,
+				8
 			]
 		}
 	],
@@ -179,13 +196,19 @@
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "imgui-master/backends/imgui_impl_sdl2.cpp",
+			"path" : "imgui-master/imgui_demo.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
 			"path" : "imgui-master/backends/imgui_impl_opengl3.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "imgui-master/backends/imgui_impl_glfw.cpp",
 			"sourceGroupIndex" : 0
 		}
 	],
