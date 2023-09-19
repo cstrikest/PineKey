@@ -1,3 +1,0 @@
-C:/Pine/Prog/PineKey/build/CMakeFiles/PineKey.dir
-C:/Pine/Prog/PineKey/build/CMakeFiles/edit_cache.dir
-C:/Pine/Prog/PineKey/build/CMakeFiles/rebuild_cache.dir
