@@ -4,7 +4,6 @@ cmake_minimum_required(VERSION 3.10)
 
 project(PineKey)
 
-set(SDL2_LIBRARY C:/Pine/Prog/PineKey/bin/SDL2.dll)
 set(GLFW_LIBRARY C:/Pine/Prog/PineKey/lib/glfw3.dll)
 
 # imgui paths
@@ -27,7 +26,7 @@ add_executable(${PROJECT_NAME} main.cpp KeyHook.cpp ${IMGUI_SOURCES} C:/Pine/Pro
 
 include_directories(C:/Pine/Prog/PineKey/include/ ${IMGUI_DIR} ${IMGUI_DIR}/backends)
     
-target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARY} ${GLFW_LIBRARY} opengl32.lib gdi32.lib shell32.lib)
+target_link_libraries(${PROJECT_NAME} ${GLFW_LIBRARY} opengl32.lib gdi32.lib shell32.lib)
 
 set_target_properties(PineKey PROPERTIES WIN32_EXECUTABLE TRUE)
 
