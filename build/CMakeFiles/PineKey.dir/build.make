@@ -98,135 +98,135 @@ CMakeFiles/PineKey.dir/KeyHook.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/PineKey.dir/KeyHook.cpp.s"
 	C:\Pine\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Pine\Prog\PineKey\KeyHook.cpp -o CMakeFiles\PineKey.dir\KeyHook.cpp.s
 
-CMakeFiles/PineKey.dir/imgui-master/imgui.cpp.obj: CMakeFiles/PineKey.dir/flags.make
-CMakeFiles/PineKey.dir/imgui-master/imgui.cpp.obj: CMakeFiles/PineKey.dir/includes_CXX.rsp
-CMakeFiles/PineKey.dir/imgui-master/imgui.cpp.obj: C:/Pine/Prog/PineKey/imgui-master/imgui.cpp
-CMakeFiles/PineKey.dir/imgui-master/imgui.cpp.obj: CMakeFiles/PineKey.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Pine\Prog\PineKey\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/PineKey.dir/imgui-master/imgui.cpp.obj"
-	C:\Pine\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/PineKey.dir/imgui-master/imgui.cpp.obj -MF CMakeFiles\PineKey.dir\imgui-master\imgui.cpp.obj.d -o CMakeFiles\PineKey.dir\imgui-master\imgui.cpp.obj -c C:\Pine\Prog\PineKey\imgui-master\imgui.cpp
+CMakeFiles/PineKey.dir/imgui-docking/imgui.cpp.obj: CMakeFiles/PineKey.dir/flags.make
+CMakeFiles/PineKey.dir/imgui-docking/imgui.cpp.obj: CMakeFiles/PineKey.dir/includes_CXX.rsp
+CMakeFiles/PineKey.dir/imgui-docking/imgui.cpp.obj: C:/Pine/Prog/PineKey/imgui-docking/imgui.cpp
+CMakeFiles/PineKey.dir/imgui-docking/imgui.cpp.obj: CMakeFiles/PineKey.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Pine\Prog\PineKey\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/PineKey.dir/imgui-docking/imgui.cpp.obj"
+	C:\Pine\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/PineKey.dir/imgui-docking/imgui.cpp.obj -MF CMakeFiles\PineKey.dir\imgui-docking\imgui.cpp.obj.d -o CMakeFiles\PineKey.dir\imgui-docking\imgui.cpp.obj -c C:\Pine\Prog\PineKey\imgui-docking\imgui.cpp
 
-CMakeFiles/PineKey.dir/imgui-master/imgui.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/PineKey.dir/imgui-master/imgui.cpp.i"
-	C:\Pine\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Pine\Prog\PineKey\imgui-master\imgui.cpp > CMakeFiles\PineKey.dir\imgui-master\imgui.cpp.i
+CMakeFiles/PineKey.dir/imgui-docking/imgui.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/PineKey.dir/imgui-docking/imgui.cpp.i"
+	C:\Pine\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Pine\Prog\PineKey\imgui-docking\imgui.cpp > CMakeFiles\PineKey.dir\imgui-docking\imgui.cpp.i
 
-CMakeFiles/PineKey.dir/imgui-master/imgui.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/PineKey.dir/imgui-master/imgui.cpp.s"
-	C:\Pine\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Pine\Prog\PineKey\imgui-master\imgui.cpp -o CMakeFiles\PineKey.dir\imgui-master\imgui.cpp.s
+CMakeFiles/PineKey.dir/imgui-docking/imgui.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/PineKey.dir/imgui-docking/imgui.cpp.s"
+	C:\Pine\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Pine\Prog\PineKey\imgui-docking\imgui.cpp -o CMakeFiles\PineKey.dir\imgui-docking\imgui.cpp.s
 
-CMakeFiles/PineKey.dir/imgui-master/imgui_draw.cpp.obj: CMakeFiles/PineKey.dir/flags.make
-CMakeFiles/PineKey.dir/imgui-master/imgui_draw.cpp.obj: CMakeFiles/PineKey.dir/includes_CXX.rsp
-CMakeFiles/PineKey.dir/imgui-master/imgui_draw.cpp.obj: C:/Pine/Prog/PineKey/imgui-master/imgui_draw.cpp
-CMakeFiles/PineKey.dir/imgui-master/imgui_draw.cpp.obj: CMakeFiles/PineKey.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Pine\Prog\PineKey\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/PineKey.dir/imgui-master/imgui_draw.cpp.obj"
-	C:\Pine\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/PineKey.dir/imgui-master/imgui_draw.cpp.obj -MF CMakeFiles\PineKey.dir\imgui-master\imgui_draw.cpp.obj.d -o CMakeFiles\PineKey.dir\imgui-master\imgui_draw.cpp.obj -c C:\Pine\Prog\PineKey\imgui-master\imgui_draw.cpp
+CMakeFiles/PineKey.dir/imgui-docking/imgui_draw.cpp.obj: CMakeFiles/PineKey.dir/flags.make
+CMakeFiles/PineKey.dir/imgui-docking/imgui_draw.cpp.obj: CMakeFiles/PineKey.dir/includes_CXX.rsp
+CMakeFiles/PineKey.dir/imgui-docking/imgui_draw.cpp.obj: C:/Pine/Prog/PineKey/imgui-docking/imgui_draw.cpp
+CMakeFiles/PineKey.dir/imgui-docking/imgui_draw.cpp.obj: CMakeFiles/PineKey.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Pine\Prog\PineKey\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/PineKey.dir/imgui-docking/imgui_draw.cpp.obj"
+	C:\Pine\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/PineKey.dir/imgui-docking/imgui_draw.cpp.obj -MF CMakeFiles\PineKey.dir\imgui-docking\imgui_draw.cpp.obj.d -o CMakeFiles\PineKey.dir\imgui-docking\imgui_draw.cpp.obj -c C:\Pine\Prog\PineKey\imgui-docking\imgui_draw.cpp
 
-CMakeFiles/PineKey.dir/imgui-master/imgui_draw.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/PineKey.dir/imgui-master/imgui_draw.cpp.i"
-	C:\Pine\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Pine\Prog\PineKey\imgui-master\imgui_draw.cpp > CMakeFiles\PineKey.dir\imgui-master\imgui_draw.cpp.i
+CMakeFiles/PineKey.dir/imgui-docking/imgui_draw.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/PineKey.dir/imgui-docking/imgui_draw.cpp.i"
+	C:\Pine\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Pine\Prog\PineKey\imgui-docking\imgui_draw.cpp > CMakeFiles\PineKey.dir\imgui-docking\imgui_draw.cpp.i
 
-CMakeFiles/PineKey.dir/imgui-master/imgui_draw.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/PineKey.dir/imgui-master/imgui_draw.cpp.s"
-	C:\Pine\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Pine\Prog\PineKey\imgui-master\imgui_draw.cpp -o CMakeFiles\PineKey.dir\imgui-master\imgui_draw.cpp.s
+CMakeFiles/PineKey.dir/imgui-docking/imgui_draw.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/PineKey.dir/imgui-docking/imgui_draw.cpp.s"
+	C:\Pine\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Pine\Prog\PineKey\imgui-docking\imgui_draw.cpp -o CMakeFiles\PineKey.dir\imgui-docking\imgui_draw.cpp.s
 
-CMakeFiles/PineKey.dir/imgui-master/imgui_widgets.cpp.obj: CMakeFiles/PineKey.dir/flags.make
-CMakeFiles/PineKey.dir/imgui-master/imgui_widgets.cpp.obj: CMakeFiles/PineKey.dir/includes_CXX.rsp
-CMakeFiles/PineKey.dir/imgui-master/imgui_widgets.cpp.obj: C:/Pine/Prog/PineKey/imgui-master/imgui_widgets.cpp
-CMakeFiles/PineKey.dir/imgui-master/imgui_widgets.cpp.obj: CMakeFiles/PineKey.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Pine\Prog\PineKey\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/PineKey.dir/imgui-master/imgui_widgets.cpp.obj"
-	C:\Pine\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/PineKey.dir/imgui-master/imgui_widgets.cpp.obj -MF CMakeFiles\PineKey.dir\imgui-master\imgui_widgets.cpp.obj.d -o CMakeFiles\PineKey.dir\imgui-master\imgui_widgets.cpp.obj -c C:\Pine\Prog\PineKey\imgui-master\imgui_widgets.cpp
+CMakeFiles/PineKey.dir/imgui-docking/imgui_widgets.cpp.obj: CMakeFiles/PineKey.dir/flags.make
+CMakeFiles/PineKey.dir/imgui-docking/imgui_widgets.cpp.obj: CMakeFiles/PineKey.dir/includes_CXX.rsp
+CMakeFiles/PineKey.dir/imgui-docking/imgui_widgets.cpp.obj: C:/Pine/Prog/PineKey/imgui-docking/imgui_widgets.cpp
+CMakeFiles/PineKey.dir/imgui-docking/imgui_widgets.cpp.obj: CMakeFiles/PineKey.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Pine\Prog\PineKey\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/PineKey.dir/imgui-docking/imgui_widgets.cpp.obj"
+	C:\Pine\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/PineKey.dir/imgui-docking/imgui_widgets.cpp.obj -MF CMakeFiles\PineKey.dir\imgui-docking\imgui_widgets.cpp.obj.d -o CMakeFiles\PineKey.dir\imgui-docking\imgui_widgets.cpp.obj -c C:\Pine\Prog\PineKey\imgui-docking\imgui_widgets.cpp
 
-CMakeFiles/PineKey.dir/imgui-master/imgui_widgets.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/PineKey.dir/imgui-master/imgui_widgets.cpp.i"
-	C:\Pine\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Pine\Prog\PineKey\imgui-master\imgui_widgets.cpp > CMakeFiles\PineKey.dir\imgui-master\imgui_widgets.cpp.i
+CMakeFiles/PineKey.dir/imgui-docking/imgui_widgets.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/PineKey.dir/imgui-docking/imgui_widgets.cpp.i"
+	C:\Pine\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Pine\Prog\PineKey\imgui-docking\imgui_widgets.cpp > CMakeFiles\PineKey.dir\imgui-docking\imgui_widgets.cpp.i
 
-CMakeFiles/PineKey.dir/imgui-master/imgui_widgets.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/PineKey.dir/imgui-master/imgui_widgets.cpp.s"
-	C:\Pine\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Pine\Prog\PineKey\imgui-master\imgui_widgets.cpp -o CMakeFiles\PineKey.dir\imgui-master\imgui_widgets.cpp.s
+CMakeFiles/PineKey.dir/imgui-docking/imgui_widgets.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/PineKey.dir/imgui-docking/imgui_widgets.cpp.s"
+	C:\Pine\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Pine\Prog\PineKey\imgui-docking\imgui_widgets.cpp -o CMakeFiles\PineKey.dir\imgui-docking\imgui_widgets.cpp.s
 
-CMakeFiles/PineKey.dir/imgui-master/imgui_tables.cpp.obj: CMakeFiles/PineKey.dir/flags.make
-CMakeFiles/PineKey.dir/imgui-master/imgui_tables.cpp.obj: CMakeFiles/PineKey.dir/includes_CXX.rsp
-CMakeFiles/PineKey.dir/imgui-master/imgui_tables.cpp.obj: C:/Pine/Prog/PineKey/imgui-master/imgui_tables.cpp
-CMakeFiles/PineKey.dir/imgui-master/imgui_tables.cpp.obj: CMakeFiles/PineKey.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Pine\Prog\PineKey\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/PineKey.dir/imgui-master/imgui_tables.cpp.obj"
-	C:\Pine\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/PineKey.dir/imgui-master/imgui_tables.cpp.obj -MF CMakeFiles\PineKey.dir\imgui-master\imgui_tables.cpp.obj.d -o CMakeFiles\PineKey.dir\imgui-master\imgui_tables.cpp.obj -c C:\Pine\Prog\PineKey\imgui-master\imgui_tables.cpp
+CMakeFiles/PineKey.dir/imgui-docking/imgui_tables.cpp.obj: CMakeFiles/PineKey.dir/flags.make
+CMakeFiles/PineKey.dir/imgui-docking/imgui_tables.cpp.obj: CMakeFiles/PineKey.dir/includes_CXX.rsp
+CMakeFiles/PineKey.dir/imgui-docking/imgui_tables.cpp.obj: C:/Pine/Prog/PineKey/imgui-docking/imgui_tables.cpp
+CMakeFiles/PineKey.dir/imgui-docking/imgui_tables.cpp.obj: CMakeFiles/PineKey.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Pine\Prog\PineKey\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/PineKey.dir/imgui-docking/imgui_tables.cpp.obj"
+	C:\Pine\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/PineKey.dir/imgui-docking/imgui_tables.cpp.obj -MF CMakeFiles\PineKey.dir\imgui-docking\imgui_tables.cpp.obj.d -o CMakeFiles\PineKey.dir\imgui-docking\imgui_tables.cpp.obj -c C:\Pine\Prog\PineKey\imgui-docking\imgui_tables.cpp
 
-CMakeFiles/PineKey.dir/imgui-master/imgui_tables.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/PineKey.dir/imgui-master/imgui_tables.cpp.i"
-	C:\Pine\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Pine\Prog\PineKey\imgui-master\imgui_tables.cpp > CMakeFiles\PineKey.dir\imgui-master\imgui_tables.cpp.i
+CMakeFiles/PineKey.dir/imgui-docking/imgui_tables.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/PineKey.dir/imgui-docking/imgui_tables.cpp.i"
+	C:\Pine\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Pine\Prog\PineKey\imgui-docking\imgui_tables.cpp > CMakeFiles\PineKey.dir\imgui-docking\imgui_tables.cpp.i
 
-CMakeFiles/PineKey.dir/imgui-master/imgui_tables.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/PineKey.dir/imgui-master/imgui_tables.cpp.s"
-	C:\Pine\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Pine\Prog\PineKey\imgui-master\imgui_tables.cpp -o CMakeFiles\PineKey.dir\imgui-master\imgui_tables.cpp.s
+CMakeFiles/PineKey.dir/imgui-docking/imgui_tables.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/PineKey.dir/imgui-docking/imgui_tables.cpp.s"
+	C:\Pine\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Pine\Prog\PineKey\imgui-docking\imgui_tables.cpp -o CMakeFiles\PineKey.dir\imgui-docking\imgui_tables.cpp.s
 
-CMakeFiles/PineKey.dir/imgui-master/imgui_demo.cpp.obj: CMakeFiles/PineKey.dir/flags.make
-CMakeFiles/PineKey.dir/imgui-master/imgui_demo.cpp.obj: CMakeFiles/PineKey.dir/includes_CXX.rsp
-CMakeFiles/PineKey.dir/imgui-master/imgui_demo.cpp.obj: C:/Pine/Prog/PineKey/imgui-master/imgui_demo.cpp
-CMakeFiles/PineKey.dir/imgui-master/imgui_demo.cpp.obj: CMakeFiles/PineKey.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Pine\Prog\PineKey\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/PineKey.dir/imgui-master/imgui_demo.cpp.obj"
-	C:\Pine\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/PineKey.dir/imgui-master/imgui_demo.cpp.obj -MF CMakeFiles\PineKey.dir\imgui-master\imgui_demo.cpp.obj.d -o CMakeFiles\PineKey.dir\imgui-master\imgui_demo.cpp.obj -c C:\Pine\Prog\PineKey\imgui-master\imgui_demo.cpp
+CMakeFiles/PineKey.dir/imgui-docking/imgui_demo.cpp.obj: CMakeFiles/PineKey.dir/flags.make
+CMakeFiles/PineKey.dir/imgui-docking/imgui_demo.cpp.obj: CMakeFiles/PineKey.dir/includes_CXX.rsp
+CMakeFiles/PineKey.dir/imgui-docking/imgui_demo.cpp.obj: C:/Pine/Prog/PineKey/imgui-docking/imgui_demo.cpp
+CMakeFiles/PineKey.dir/imgui-docking/imgui_demo.cpp.obj: CMakeFiles/PineKey.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Pine\Prog\PineKey\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/PineKey.dir/imgui-docking/imgui_demo.cpp.obj"
+	C:\Pine\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/PineKey.dir/imgui-docking/imgui_demo.cpp.obj -MF CMakeFiles\PineKey.dir\imgui-docking\imgui_demo.cpp.obj.d -o CMakeFiles\PineKey.dir\imgui-docking\imgui_demo.cpp.obj -c C:\Pine\Prog\PineKey\imgui-docking\imgui_demo.cpp
 
-CMakeFiles/PineKey.dir/imgui-master/imgui_demo.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/PineKey.dir/imgui-master/imgui_demo.cpp.i"
-	C:\Pine\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Pine\Prog\PineKey\imgui-master\imgui_demo.cpp > CMakeFiles\PineKey.dir\imgui-master\imgui_demo.cpp.i
+CMakeFiles/PineKey.dir/imgui-docking/imgui_demo.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/PineKey.dir/imgui-docking/imgui_demo.cpp.i"
+	C:\Pine\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Pine\Prog\PineKey\imgui-docking\imgui_demo.cpp > CMakeFiles\PineKey.dir\imgui-docking\imgui_demo.cpp.i
 
-CMakeFiles/PineKey.dir/imgui-master/imgui_demo.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/PineKey.dir/imgui-master/imgui_demo.cpp.s"
-	C:\Pine\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Pine\Prog\PineKey\imgui-master\imgui_demo.cpp -o CMakeFiles\PineKey.dir\imgui-master\imgui_demo.cpp.s
+CMakeFiles/PineKey.dir/imgui-docking/imgui_demo.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/PineKey.dir/imgui-docking/imgui_demo.cpp.s"
+	C:\Pine\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Pine\Prog\PineKey\imgui-docking\imgui_demo.cpp -o CMakeFiles\PineKey.dir\imgui-docking\imgui_demo.cpp.s
 
-CMakeFiles/PineKey.dir/imgui-master/backends/imgui_impl_opengl3.cpp.obj: CMakeFiles/PineKey.dir/flags.make
-CMakeFiles/PineKey.dir/imgui-master/backends/imgui_impl_opengl3.cpp.obj: CMakeFiles/PineKey.dir/includes_CXX.rsp
-CMakeFiles/PineKey.dir/imgui-master/backends/imgui_impl_opengl3.cpp.obj: C:/Pine/Prog/PineKey/imgui-master/backends/imgui_impl_opengl3.cpp
-CMakeFiles/PineKey.dir/imgui-master/backends/imgui_impl_opengl3.cpp.obj: CMakeFiles/PineKey.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Pine\Prog\PineKey\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/PineKey.dir/imgui-master/backends/imgui_impl_opengl3.cpp.obj"
-	C:\Pine\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/PineKey.dir/imgui-master/backends/imgui_impl_opengl3.cpp.obj -MF CMakeFiles\PineKey.dir\imgui-master\backends\imgui_impl_opengl3.cpp.obj.d -o CMakeFiles\PineKey.dir\imgui-master\backends\imgui_impl_opengl3.cpp.obj -c C:\Pine\Prog\PineKey\imgui-master\backends\imgui_impl_opengl3.cpp
+CMakeFiles/PineKey.dir/imgui-docking/backends/imgui_impl_opengl3.cpp.obj: CMakeFiles/PineKey.dir/flags.make
+CMakeFiles/PineKey.dir/imgui-docking/backends/imgui_impl_opengl3.cpp.obj: CMakeFiles/PineKey.dir/includes_CXX.rsp
+CMakeFiles/PineKey.dir/imgui-docking/backends/imgui_impl_opengl3.cpp.obj: C:/Pine/Prog/PineKey/imgui-docking/backends/imgui_impl_opengl3.cpp
+CMakeFiles/PineKey.dir/imgui-docking/backends/imgui_impl_opengl3.cpp.obj: CMakeFiles/PineKey.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Pine\Prog\PineKey\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/PineKey.dir/imgui-docking/backends/imgui_impl_opengl3.cpp.obj"
+	C:\Pine\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/PineKey.dir/imgui-docking/backends/imgui_impl_opengl3.cpp.obj -MF CMakeFiles\PineKey.dir\imgui-docking\backends\imgui_impl_opengl3.cpp.obj.d -o CMakeFiles\PineKey.dir\imgui-docking\backends\imgui_impl_opengl3.cpp.obj -c C:\Pine\Prog\PineKey\imgui-docking\backends\imgui_impl_opengl3.cpp
 
-CMakeFiles/PineKey.dir/imgui-master/backends/imgui_impl_opengl3.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/PineKey.dir/imgui-master/backends/imgui_impl_opengl3.cpp.i"
-	C:\Pine\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Pine\Prog\PineKey\imgui-master\backends\imgui_impl_opengl3.cpp > CMakeFiles\PineKey.dir\imgui-master\backends\imgui_impl_opengl3.cpp.i
+CMakeFiles/PineKey.dir/imgui-docking/backends/imgui_impl_opengl3.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/PineKey.dir/imgui-docking/backends/imgui_impl_opengl3.cpp.i"
+	C:\Pine\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Pine\Prog\PineKey\imgui-docking\backends\imgui_impl_opengl3.cpp > CMakeFiles\PineKey.dir\imgui-docking\backends\imgui_impl_opengl3.cpp.i
 
-CMakeFiles/PineKey.dir/imgui-master/backends/imgui_impl_opengl3.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/PineKey.dir/imgui-master/backends/imgui_impl_opengl3.cpp.s"
-	C:\Pine\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Pine\Prog\PineKey\imgui-master\backends\imgui_impl_opengl3.cpp -o CMakeFiles\PineKey.dir\imgui-master\backends\imgui_impl_opengl3.cpp.s
+CMakeFiles/PineKey.dir/imgui-docking/backends/imgui_impl_opengl3.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/PineKey.dir/imgui-docking/backends/imgui_impl_opengl3.cpp.s"
+	C:\Pine\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Pine\Prog\PineKey\imgui-docking\backends\imgui_impl_opengl3.cpp -o CMakeFiles\PineKey.dir\imgui-docking\backends\imgui_impl_opengl3.cpp.s
 
-CMakeFiles/PineKey.dir/imgui-master/backends/imgui_impl_glfw.cpp.obj: CMakeFiles/PineKey.dir/flags.make
-CMakeFiles/PineKey.dir/imgui-master/backends/imgui_impl_glfw.cpp.obj: CMakeFiles/PineKey.dir/includes_CXX.rsp
-CMakeFiles/PineKey.dir/imgui-master/backends/imgui_impl_glfw.cpp.obj: C:/Pine/Prog/PineKey/imgui-master/backends/imgui_impl_glfw.cpp
-CMakeFiles/PineKey.dir/imgui-master/backends/imgui_impl_glfw.cpp.obj: CMakeFiles/PineKey.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Pine\Prog\PineKey\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/PineKey.dir/imgui-master/backends/imgui_impl_glfw.cpp.obj"
-	C:\Pine\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/PineKey.dir/imgui-master/backends/imgui_impl_glfw.cpp.obj -MF CMakeFiles\PineKey.dir\imgui-master\backends\imgui_impl_glfw.cpp.obj.d -o CMakeFiles\PineKey.dir\imgui-master\backends\imgui_impl_glfw.cpp.obj -c C:\Pine\Prog\PineKey\imgui-master\backends\imgui_impl_glfw.cpp
+CMakeFiles/PineKey.dir/imgui-docking/backends/imgui_impl_glfw.cpp.obj: CMakeFiles/PineKey.dir/flags.make
+CMakeFiles/PineKey.dir/imgui-docking/backends/imgui_impl_glfw.cpp.obj: CMakeFiles/PineKey.dir/includes_CXX.rsp
+CMakeFiles/PineKey.dir/imgui-docking/backends/imgui_impl_glfw.cpp.obj: C:/Pine/Prog/PineKey/imgui-docking/backends/imgui_impl_glfw.cpp
+CMakeFiles/PineKey.dir/imgui-docking/backends/imgui_impl_glfw.cpp.obj: CMakeFiles/PineKey.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Pine\Prog\PineKey\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/PineKey.dir/imgui-docking/backends/imgui_impl_glfw.cpp.obj"
+	C:\Pine\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/PineKey.dir/imgui-docking/backends/imgui_impl_glfw.cpp.obj -MF CMakeFiles\PineKey.dir\imgui-docking\backends\imgui_impl_glfw.cpp.obj.d -o CMakeFiles\PineKey.dir\imgui-docking\backends\imgui_impl_glfw.cpp.obj -c C:\Pine\Prog\PineKey\imgui-docking\backends\imgui_impl_glfw.cpp
 
-CMakeFiles/PineKey.dir/imgui-master/backends/imgui_impl_glfw.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/PineKey.dir/imgui-master/backends/imgui_impl_glfw.cpp.i"
-	C:\Pine\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Pine\Prog\PineKey\imgui-master\backends\imgui_impl_glfw.cpp > CMakeFiles\PineKey.dir\imgui-master\backends\imgui_impl_glfw.cpp.i
+CMakeFiles/PineKey.dir/imgui-docking/backends/imgui_impl_glfw.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/PineKey.dir/imgui-docking/backends/imgui_impl_glfw.cpp.i"
+	C:\Pine\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Pine\Prog\PineKey\imgui-docking\backends\imgui_impl_glfw.cpp > CMakeFiles\PineKey.dir\imgui-docking\backends\imgui_impl_glfw.cpp.i
 
-CMakeFiles/PineKey.dir/imgui-master/backends/imgui_impl_glfw.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/PineKey.dir/imgui-master/backends/imgui_impl_glfw.cpp.s"
-	C:\Pine\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Pine\Prog\PineKey\imgui-master\backends\imgui_impl_glfw.cpp -o CMakeFiles\PineKey.dir\imgui-master\backends\imgui_impl_glfw.cpp.s
+CMakeFiles/PineKey.dir/imgui-docking/backends/imgui_impl_glfw.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/PineKey.dir/imgui-docking/backends/imgui_impl_glfw.cpp.s"
+	C:\Pine\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Pine\Prog\PineKey\imgui-docking\backends\imgui_impl_glfw.cpp -o CMakeFiles\PineKey.dir\imgui-docking\backends\imgui_impl_glfw.cpp.s
 
 # Object files for target PineKey
 PineKey_OBJECTS = \
 "CMakeFiles/PineKey.dir/main.cpp.obj" \
 "CMakeFiles/PineKey.dir/KeyHook.cpp.obj" \
-"CMakeFiles/PineKey.dir/imgui-master/imgui.cpp.obj" \
-"CMakeFiles/PineKey.dir/imgui-master/imgui_draw.cpp.obj" \
-"CMakeFiles/PineKey.dir/imgui-master/imgui_widgets.cpp.obj" \
-"CMakeFiles/PineKey.dir/imgui-master/imgui_tables.cpp.obj" \
-"CMakeFiles/PineKey.dir/imgui-master/imgui_demo.cpp.obj" \
-"CMakeFiles/PineKey.dir/imgui-master/backends/imgui_impl_opengl3.cpp.obj" \
-"CMakeFiles/PineKey.dir/imgui-master/backends/imgui_impl_glfw.cpp.obj"
+"CMakeFiles/PineKey.dir/imgui-docking/imgui.cpp.obj" \
+"CMakeFiles/PineKey.dir/imgui-docking/imgui_draw.cpp.obj" \
+"CMakeFiles/PineKey.dir/imgui-docking/imgui_widgets.cpp.obj" \
+"CMakeFiles/PineKey.dir/imgui-docking/imgui_tables.cpp.obj" \
+"CMakeFiles/PineKey.dir/imgui-docking/imgui_demo.cpp.obj" \
+"CMakeFiles/PineKey.dir/imgui-docking/backends/imgui_impl_opengl3.cpp.obj" \
+"CMakeFiles/PineKey.dir/imgui-docking/backends/imgui_impl_glfw.cpp.obj"
 
 # External object files for target PineKey
 PineKey_EXTERNAL_OBJECTS =
 
 PineKey.exe: CMakeFiles/PineKey.dir/main.cpp.obj
 PineKey.exe: CMakeFiles/PineKey.dir/KeyHook.cpp.obj
-PineKey.exe: CMakeFiles/PineKey.dir/imgui-master/imgui.cpp.obj
-PineKey.exe: CMakeFiles/PineKey.dir/imgui-master/imgui_draw.cpp.obj
-PineKey.exe: CMakeFiles/PineKey.dir/imgui-master/imgui_widgets.cpp.obj
-PineKey.exe: CMakeFiles/PineKey.dir/imgui-master/imgui_tables.cpp.obj
-PineKey.exe: CMakeFiles/PineKey.dir/imgui-master/imgui_demo.cpp.obj
-PineKey.exe: CMakeFiles/PineKey.dir/imgui-master/backends/imgui_impl_opengl3.cpp.obj
-PineKey.exe: CMakeFiles/PineKey.dir/imgui-master/backends/imgui_impl_glfw.cpp.obj
+PineKey.exe: CMakeFiles/PineKey.dir/imgui-docking/imgui.cpp.obj
+PineKey.exe: CMakeFiles/PineKey.dir/imgui-docking/imgui_draw.cpp.obj
+PineKey.exe: CMakeFiles/PineKey.dir/imgui-docking/imgui_widgets.cpp.obj
+PineKey.exe: CMakeFiles/PineKey.dir/imgui-docking/imgui_tables.cpp.obj
+PineKey.exe: CMakeFiles/PineKey.dir/imgui-docking/imgui_demo.cpp.obj
+PineKey.exe: CMakeFiles/PineKey.dir/imgui-docking/backends/imgui_impl_opengl3.cpp.obj
+PineKey.exe: CMakeFiles/PineKey.dir/imgui-docking/backends/imgui_impl_glfw.cpp.obj
 PineKey.exe: CMakeFiles/PineKey.dir/build.make
 PineKey.exe: C:/Pine/Prog/PineKey/bin/SDL2.dll
 PineKey.exe: C:/Pine/Prog/PineKey/lib/glfw3.dll

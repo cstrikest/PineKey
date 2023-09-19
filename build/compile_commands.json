@@ -13,44 +13,44 @@
 },
 {
   "directory": "C:/Pine/Prog/PineKey/build",
-  "command": "C:\\Pine\\mingw64\\bin\\g++.exe  @CMakeFiles/PineKey.dir/includes_CXX.rsp -Os -DNDEBUG -o CMakeFiles\\PineKey.dir\\imgui-master\\imgui.cpp.obj -c C:\\Pine\\Prog\\PineKey\\imgui-master\\imgui.cpp",
-  "file": "C:/Pine/Prog/PineKey/imgui-master/imgui.cpp",
-  "output": "CMakeFiles/PineKey.dir/imgui-master/imgui.cpp.obj"
+  "command": "C:\\Pine\\mingw64\\bin\\g++.exe  @CMakeFiles/PineKey.dir/includes_CXX.rsp -Os -DNDEBUG -o CMakeFiles\\PineKey.dir\\imgui-docking\\imgui.cpp.obj -c C:\\Pine\\Prog\\PineKey\\imgui-docking\\imgui.cpp",
+  "file": "C:/Pine/Prog/PineKey/imgui-docking/imgui.cpp",
+  "output": "CMakeFiles/PineKey.dir/imgui-docking/imgui.cpp.obj"
 },
 {
   "directory": "C:/Pine/Prog/PineKey/build",
-  "command": "C:\\Pine\\mingw64\\bin\\g++.exe  @CMakeFiles/PineKey.dir/includes_CXX.rsp -Os -DNDEBUG -o CMakeFiles\\PineKey.dir\\imgui-master\\imgui_draw.cpp.obj -c C:\\Pine\\Prog\\PineKey\\imgui-master\\imgui_draw.cpp",
-  "file": "C:/Pine/Prog/PineKey/imgui-master/imgui_draw.cpp",
-  "output": "CMakeFiles/PineKey.dir/imgui-master/imgui_draw.cpp.obj"
+  "command": "C:\\Pine\\mingw64\\bin\\g++.exe  @CMakeFiles/PineKey.dir/includes_CXX.rsp -Os -DNDEBUG -o CMakeFiles\\PineKey.dir\\imgui-docking\\imgui_draw.cpp.obj -c C:\\Pine\\Prog\\PineKey\\imgui-docking\\imgui_draw.cpp",
+  "file": "C:/Pine/Prog/PineKey/imgui-docking/imgui_draw.cpp",
+  "output": "CMakeFiles/PineKey.dir/imgui-docking/imgui_draw.cpp.obj"
 },
 {
   "directory": "C:/Pine/Prog/PineKey/build",
-  "command": "C:\\Pine\\mingw64\\bin\\g++.exe  @CMakeFiles/PineKey.dir/includes_CXX.rsp -Os -DNDEBUG -o CMakeFiles\\PineKey.dir\\imgui-master\\imgui_widgets.cpp.obj -c C:\\Pine\\Prog\\PineKey\\imgui-master\\imgui_widgets.cpp",
-  "file": "C:/Pine/Prog/PineKey/imgui-master/imgui_widgets.cpp",
-  "output": "CMakeFiles/PineKey.dir/imgui-master/imgui_widgets.cpp.obj"
+  "command": "C:\\Pine\\mingw64\\bin\\g++.exe  @CMakeFiles/PineKey.dir/includes_CXX.rsp -Os -DNDEBUG -o CMakeFiles\\PineKey.dir\\imgui-docking\\imgui_widgets.cpp.obj -c C:\\Pine\\Prog\\PineKey\\imgui-docking\\imgui_widgets.cpp",
+  "file": "C:/Pine/Prog/PineKey/imgui-docking/imgui_widgets.cpp",
+  "output": "CMakeFiles/PineKey.dir/imgui-docking/imgui_widgets.cpp.obj"
 },
 {
   "directory": "C:/Pine/Prog/PineKey/build",
-  "command": "C:\\Pine\\mingw64\\bin\\g++.exe  @CMakeFiles/PineKey.dir/includes_CXX.rsp -Os -DNDEBUG -o CMakeFiles\\PineKey.dir\\imgui-master\\imgui_tables.cpp.obj -c C:\\Pine\\Prog\\PineKey\\imgui-master\\imgui_tables.cpp",
-  "file": "C:/Pine/Prog/PineKey/imgui-master/imgui_tables.cpp",
-  "output": "CMakeFiles/PineKey.dir/imgui-master/imgui_tables.cpp.obj"
+  "command": "C:\\Pine\\mingw64\\bin\\g++.exe  @CMakeFiles/PineKey.dir/includes_CXX.rsp -Os -DNDEBUG -o CMakeFiles\\PineKey.dir\\imgui-docking\\imgui_tables.cpp.obj -c C:\\Pine\\Prog\\PineKey\\imgui-docking\\imgui_tables.cpp",
+  "file": "C:/Pine/Prog/PineKey/imgui-docking/imgui_tables.cpp",
+  "output": "CMakeFiles/PineKey.dir/imgui-docking/imgui_tables.cpp.obj"
 },
 {
   "directory": "C:/Pine/Prog/PineKey/build",
-  "command": "C:\\Pine\\mingw64\\bin\\g++.exe  @CMakeFiles/PineKey.dir/includes_CXX.rsp -Os -DNDEBUG -o CMakeFiles\\PineKey.dir\\imgui-master\\imgui_demo.cpp.obj -c C:\\Pine\\Prog\\PineKey\\imgui-master\\imgui_demo.cpp",
-  "file": "C:/Pine/Prog/PineKey/imgui-master/imgui_demo.cpp",
-  "output": "CMakeFiles/PineKey.dir/imgui-master/imgui_demo.cpp.obj"
+  "command": "C:\\Pine\\mingw64\\bin\\g++.exe  @CMakeFiles/PineKey.dir/includes_CXX.rsp -Os -DNDEBUG -o CMakeFiles\\PineKey.dir\\imgui-docking\\imgui_demo.cpp.obj -c C:\\Pine\\Prog\\PineKey\\imgui-docking\\imgui_demo.cpp",
+  "file": "C:/Pine/Prog/PineKey/imgui-docking/imgui_demo.cpp",
+  "output": "CMakeFiles/PineKey.dir/imgui-docking/imgui_demo.cpp.obj"
 },
 {
   "directory": "C:/Pine/Prog/PineKey/build",
-  "command": "C:\\Pine\\mingw64\\bin\\g++.exe  @CMakeFiles/PineKey.dir/includes_CXX.rsp -Os -DNDEBUG -o CMakeFiles\\PineKey.dir\\imgui-master\\backends\\imgui_impl_opengl3.cpp.obj -c C:\\Pine\\Prog\\PineKey\\imgui-master\\backends\\imgui_impl_opengl3.cpp",
-  "file": "C:/Pine/Prog/PineKey/imgui-master/backends/imgui_impl_opengl3.cpp",
-  "output": "CMakeFiles/PineKey.dir/imgui-master/backends/imgui_impl_opengl3.cpp.obj"
+  "command": "C:\\Pine\\mingw64\\bin\\g++.exe  @CMakeFiles/PineKey.dir/includes_CXX.rsp -Os -DNDEBUG -o CMakeFiles\\PineKey.dir\\imgui-docking\\backends\\imgui_impl_opengl3.cpp.obj -c C:\\Pine\\Prog\\PineKey\\imgui-docking\\backends\\imgui_impl_opengl3.cpp",
+  "file": "C:/Pine/Prog/PineKey/imgui-docking/backends/imgui_impl_opengl3.cpp",
+  "output": "CMakeFiles/PineKey.dir/imgui-docking/backends/imgui_impl_opengl3.cpp.obj"
 },
 {
   "directory": "C:/Pine/Prog/PineKey/build",
-  "command": "C:\\Pine\\mingw64\\bin\\g++.exe  @CMakeFiles/PineKey.dir/includes_CXX.rsp -Os -DNDEBUG -o CMakeFiles\\PineKey.dir\\imgui-master\\backends\\imgui_impl_glfw.cpp.obj -c C:\\Pine\\Prog\\PineKey\\imgui-master\\backends\\imgui_impl_glfw.cpp",
-  "file": "C:/Pine/Prog/PineKey/imgui-master/backends/imgui_impl_glfw.cpp",
-  "output": "CMakeFiles/PineKey.dir/imgui-master/backends/imgui_impl_glfw.cpp.obj"
+  "command": "C:\\Pine\\mingw64\\bin\\g++.exe  @CMakeFiles/PineKey.dir/includes_CXX.rsp -Os -DNDEBUG -o CMakeFiles\\PineKey.dir\\imgui-docking\\backends\\imgui_impl_glfw.cpp.obj -c C:\\Pine\\Prog\\PineKey\\imgui-docking\\backends\\imgui_impl_glfw.cpp",
+  "file": "C:/Pine/Prog/PineKey/imgui-docking/backends/imgui_impl_glfw.cpp",
+  "output": "CMakeFiles/PineKey.dir/imgui-docking/backends/imgui_impl_glfw.cpp.obj"
 }
 ]

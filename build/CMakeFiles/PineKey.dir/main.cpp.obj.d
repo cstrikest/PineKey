@@ -1,6 +1,6 @@
 CMakeFiles/PineKey.dir/main.cpp.obj: C:\Pine\Prog\PineKey\main.cpp \
- C:/Pine/Prog/PineKey/imgui-master/imgui.h \
- C:/Pine/Prog/PineKey/imgui-master/imconfig.h \
+ C:/Pine/Prog/PineKey/imgui-docking/imgui.h \
+ C:/Pine/Prog/PineKey/imgui-docking/imconfig.h \
  C:/Pine/mingw64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/float.h \
  C:/Pine/mingw64/x86_64-w64-mingw32/include/float.h \
  C:/Pine/mingw64/x86_64-w64-mingw32/include/crtdefs.h \
@@ -34,8 +34,8 @@ CMakeFiles/PineKey.dir/main.cpp.obj: C:\Pine\Prog\PineKey\main.cpp \
  C:/Pine/mingw64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/mm_malloc.h \
  C:/Pine/mingw64/x86_64-w64-mingw32/include/errno.h \
  C:/Pine/mingw64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/std_abs.h \
- C:/Pine/Prog/PineKey/imgui-master/backends/imgui_impl_glfw.h \
- C:/Pine/Prog/PineKey/imgui-master/backends/imgui_impl_opengl3.h \
+ C:/Pine/Prog/PineKey/imgui-docking/backends/imgui_impl_glfw.h \
+ C:/Pine/Prog/PineKey/imgui-docking/backends/imgui_impl_opengl3.h \
  C:/Pine/mingw64/x86_64-w64-mingw32/include/stdio.h \
  C:/Pine/mingw64/x86_64-w64-mingw32/include/corecrt_stdio_config.h \
  C:/Pine/mingw64/x86_64-w64-mingw32/include/_mingw_off_t.h \
