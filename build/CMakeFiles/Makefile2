@@ -80,12 +80,12 @@ clean: CMakeFiles/PineKey.dir/clean
 CMakeFiles/PineKey.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\PineKey.dir\build.make CMakeFiles/PineKey.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\PineKey.dir\build.make CMakeFiles/PineKey.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Pine\Prog\PineKey\build\CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10 "Built target PineKey"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Pine\Prog\PineKey\build\CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11 "Built target PineKey"
 .PHONY : CMakeFiles/PineKey.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/PineKey.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start C:\Pine\Prog\PineKey\build\CMakeFiles 10
+	$(CMAKE_COMMAND) -E cmake_progress_start C:\Pine\Prog\PineKey\build\CMakeFiles 11
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 CMakeFiles/PineKey.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start C:\Pine\Prog\PineKey\build\CMakeFiles 0
 .PHONY : CMakeFiles/PineKey.dir/rule

@@ -17,6 +17,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/PineKey.dir/imgui-docking/imgui_widgets.cpp.obj.d"
   "CMakeFiles/PineKey.dir/main.cpp.obj"
   "CMakeFiles/PineKey.dir/main.cpp.obj.d"
+  "CMakeFiles/PineKey.dir/resources.rc.obj"
   "PineKey.exe"
   "PineKey.exe.manifest"
   "PineKey.pdb"
@@ -24,6 +25,6 @@ file(REMOVE_RECURSE
 )
 
 # Per-language clean rules from dependency scanning.
-foreach(lang CXX)
+foreach(lang CXX RC)
   include(CMakeFiles/PineKey.dir/cmake_clean_${lang}.cmake OPTIONAL)
 endforeach()

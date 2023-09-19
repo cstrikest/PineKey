@@ -23,12 +23,14 @@ set(IMGUI_SOURCES
 
 set(RESOURCE_FILES resources.rc)
 
-add_executable(${PROJECT_NAME} main.cpp KeyHook.cpp ${IMGUI_SOURCES})
+add_executable(${PROJECT_NAME} main.cpp KeyHook.cpp ${IMGUI_SOURCES} C:/Pine/Prog/PineKey/resources.rc)
 
 include_directories(C:/Pine/Prog/PineKey/include/ ${IMGUI_DIR} ${IMGUI_DIR}/backends)
     
 target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARY} ${GLFW_LIBRARY} opengl32.lib gdi32.lib shell32.lib)
 
 set_target_properties(PineKey PROPERTIES WIN32_EXECUTABLE TRUE)
+
+#target_sources(PineKey PUBLIC C:/Pine/Prog/PineKey/resources.rc)
 
 # TODO: Additional setup if needed
