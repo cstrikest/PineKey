@@ -1,4 +1,4 @@
-./build
-./icon.ico
-./icon.bmp
-./icon2.ico
+build/
+icon.ico
+icon.bmp
+icon2.ico
