@@ -1,12 +1,17 @@
+#define DEBUG
+
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include <stdio.h>
+#include <iostream>
 #define GL_SILENCE_DEPRECATION
 #if defined(IMGUI_IMPL_OPENGL_ES2)
 #include <GLES2/gl2.h>
 #endif
 #include <GLFW/glfw3.h> // Will drag system OpenGL headers
+
+using namespace ImGui;
 
 // [Win32] Our example includes a copy of glfw3.lib pre-compiled with VS2010 to maximize ease of testing and compatibility with old VS compilers.
 // To link with VS2010-era libraries, VS2015+ requires linking with legacy_stdio_definitions.lib, which we do using this pragma.
@@ -20,7 +25,6 @@ static void glfw_error_callback(int error, const char* description)
     fprintf(stderr, "GLFW Error %d: %s\n", error, description);
 }
 
-// Main code
 int main(int, char**)
 {
     glfwSetErrorCallback(glfw_error_callback);
@@ -53,40 +57,39 @@ int main(int, char**)
     glfwWindowHint(GLFW_DECORATED, GL_FALSE); 
     //glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GL_TRUE); 
 
-    // Create window with graphics context
+    // 创建图形上下文
     GLFWwindow* window = glfwCreateWindow(1, 1, "Dear ImGui GLFW+OpenGL3 example", nullptr, nullptr);
     if (window == nullptr)
         return 1;
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1); // Enable vsync
 
-    // Setup Dear ImGui context
+    // ImGui上下文
     IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    CreateContext();
+    ImGuiIO& io = GetIO(); (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
-    // Setup Dear ImGui style
-    ImGui::StyleColorsDark();
+    // 风格
+    StyleColorsDark();
 
-    // Setup Platform/Renderer backends
+    // 平台、渲染器后端
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
-    // Load Fonts
+    // 加载字体
     //io.Fonts->AddFontDefault();
     //io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\segoeui.ttf", 18.0f);
     //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
     //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());
     //IM_ASSERT(font != nullptr);
 
-    // Our state
+    // 全局变量
     bool show_main_window = true;
-    bool show_demo_window = true;
-    bool show_another_window = false;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 0.00f);
+    static int key_count[9] = {0,0,0,0,0,0,0,0,0}; // 1~7号键按键 皿A 皿B 计数
 
     // Main loop
     while (!glfwWindowShouldClose(window))
@@ -98,70 +101,127 @@ int main(int, char**)
         // Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
         glfwPollEvents();
 
-        // Start the Dear ImGui frame
+        // 新帧
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
+        NewFrame();
 
+        // 全局变量
         static float f = 0.0f;
         static int counter = 0;
         //ImGuiWindowFlags window_flags = 0 | ImGuiWindowFlags_NoSavedSettings;
+        /*
+        {
+            if(!Begin("PineKey", &show_main_window, ImGuiWindowFlags_NoSavedSettings)){
+                End();
+                break;                          // Create a window called "Hello, world!" and append into it.
+            }
+            Text("This is some useful text.");               // Display some text (you can use a format strings too)
+            Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
+            Checkbox("Another Window", &show_another_window);
 
-        if(!ImGui::Begin("SSS AMR Prop", &show_main_window, ImGuiWindowFlags_NoSavedSettings)){
-            ImGui::End();
-            break;                          // Create a window called "Hello, world!" and append into it.
+            SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+            ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
+
+            if (Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+                counter++;
+            SameLine();
+            Text("counter = %d", counter);
+
+            Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+            End();    
         }
-        ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-        ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
-        ImGui::Checkbox("Another Window", &show_another_window);
+        */
 
-        ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-        ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
+        // 没有ini则以此位置大小新建窗口
+#ifdef DEBUG
+        ShowDemoWindow(nullptr);
+#endif
+        const ImGuiViewport* main_viewport = GetMainViewport();
+        SetNextWindowPos(ImVec2(main_viewport->WorkPos.x + 300, main_viewport->WorkPos.y + 100), ImGuiCond_FirstUseEver);
+        SetNextWindowSize(ImVec2(750, 600), ImGuiCond_FirstUseEver);
 
-        if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-            counter++;
-        ImGui::SameLine();
-        ImGui::Text("counter = %d", counter);
+        ImGuiStyle& style = GetStyle();
+        ImGuiWindowFlags main_window_flags = 0 | ImGuiWindowFlags_NoResize; // 不能调整大小
+        main_window_flags |= ImGuiWindowFlags_NoCollapse; // 不能折叠窗口
 
-        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
-        ImGui::End();
+        // 主窗口
+        {
+            Begin("PineKey", &show_main_window, main_window_flags);
+            static bool pressed = false;
+            for (int i = 0; i < 7; i++)
+            {
+                if (i > 0)
+                    ImGui::SameLine();
+                ImGui::PushID(i);
+                ImGui::PushStyleColor(ImGuiCol_Button, ImVec4((i % 2)?0.0f:1.0f, (i % 2)?0.0f:1.0f, 1.0f, 0.6f));
+                ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 0.1f, 0.1f, 0.8f));
+                ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(1.0f, 0.1f, 0.1f, 0.8f));
+                if (pressed){
+                    ImGui::Button((std::to_string(i) + std::string("111111")).c_str());
+                    pressed = false;
+                }
+                else{
+                    ImGui::Button((std::to_string(i)).c_str());
+                }
+                ImGui::PopStyleColor(3);
+                ImGui::PopID();
+            }
 
+if (Button("test"))
+{
+    
+}
+
+            if (CollapsingHeader("Config"))
+            {
+                
+            }
+            if (CollapsingHeader("Help"))
+            {
+                PushStyleColor(ImGuiCol_Separator, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
+                SeparatorText("ABOUT THIS TOOL:");
+                PopStyleColor();
+                Text("This tool is a music game auxiliary tool that visualizes the input of keys, joysticks, and game controllers.");
+                Text("Features:");
+                BulletText("Real-time display of pressed keys.");
+                BulletText("Count for each key count, total count, realtime and average KPS. Display of changes in average KPS.");
+                BulletText("Statistics on the proportion of times each key is pressed.");
+                BulletText("Calculate the average hold time for each key press.");
+                Separator();
+                TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Pineapple ~2023~");
+            }
+            
+            End();
+        }
+
+        //如果窗口被关闭
         if (!show_main_window)
-            break;
+            break;  
 
-        if (show_demo_window)
-            ImGui::ShowDemoWindow(&show_demo_window);
 
-        if (show_another_window){
-            ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-            ImGui::Text("Hello from another window!");
-            if (ImGui::Button("Close Me"))
-                show_another_window = false;
-            ImGui::End();
+        // 渲染
+        {
+            Render();
+            int display_w, display_h;
+            glfwGetFramebufferSize(window, &display_w, &display_h);
+            glViewport(0, 0, display_w, display_h);
+            glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
+            glClear(GL_COLOR_BUFFER_BIT);
+            ImGui_ImplOpenGL3_RenderDrawData(GetDrawData());
+            if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable){
+                UpdatePlatformWindows();
+                RenderPlatformWindowsDefault();
+            }
+            glfwSwapBuffers(window);  
         }
-
-        // Rendering
-        ImGui::Render();
-        int display_w, display_h;
-        glfwGetFramebufferSize(window, &display_w, &display_h);
-        glViewport(0, 0, display_w, display_h);
-        glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
-        glClear(GL_COLOR_BUFFER_BIT);
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable){
-            ImGui::UpdatePlatformWindows();
-            ImGui::RenderPlatformWindowsDefault();
-        }
-        glfwSwapBuffers(window);
     }
 
-    // Cleanup
+    // 清理
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
-
+    DestroyContext();
     glfwDestroyWindow(window);
     glfwTerminate();
-
     return 0;
 }
