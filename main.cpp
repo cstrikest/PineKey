@@ -101,20 +101,25 @@ int main(int, char**)
 
     // 全局变量
     static float f = 0.0f;
-    static int counter = 0;
+    static int counter = 0; // fps计算
+    
     bool show_main_window = true;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 0.00f);
     static int iidx_button_count[8] = {5035,4926,4427,4414,4743,4526,4196,588};
-    static float histogram_values[8] = {};
+    static float _histogram_values[8] = {};
 
     // TODO: 需要加载的配置
-    static bool enabled_histogram = true;
-    static int iidx_button_layout_style = 0; // 显示按键布局 0一条线 1iidx默认布局 2平铺
-    static bool iidx_button_default_color_style = 0; // 显示按键颜色 0单色 1默认红蓝 
+    static bool enabled_count_histogram = true;
+    static bool enabled_frame_window_histogram = true;
+    static bool enabled_all_kps = true;
+    static bool enabled_spec_kps = true;
+    static int iidx_button_layout_style = 1; // 显示按键布局 0一条线 1iidx默认布局 2平铺
+    static bool iidx_button_default_color_style = 1; // 显示按键颜色 0单色 1默认红蓝 
     static ImVec2 iidx_button_size(30, 60); // iidx按键长宽
     static ImVec2 iidx_scr_button_size(45, 60); // iidx皿按键长宽
     static int iidx_button_dummy_size = 30; // iidx默认布局横向填充空白大小
     static int key_count[9] = {0,0,0,0,0,0,0,0,0}; // 1~7号键按键 皿A 皿B 计数
+    
 
     // Main loop
     while (!glfwWindowShouldClose(window))
@@ -222,7 +227,7 @@ int main(int, char**)
 
                     // 皿
                     BeginGroup();
-                    Dummy(ImVec2(1, iidx_button_dummy_size));
+                    Dummy(ImVec2(1, iidx_button_dummy_size - iidx_scr_button_size.y));
                     PushStyleColor(ImGuiCol_Button, ImVec4(1.0f,0.0f, 0.0f, 0.3f));
                     PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f,0.0f, 0.0f, 0.8f));
                     PushStyleColor(ImGuiCol_ButtonActive, ImVec4(1.0f,0.0f, 0.0f, 0.8f));
@@ -235,13 +240,13 @@ int main(int, char**)
             }
             
             // 按键次数柱状图
-            if (enabled_histogram){
+            if (enabled_count_histogram){
                 int max = 0;
                 for (int i = 0; i<8;i++){
-                    histogram_values[i] = (float)iidx_button_count[i];
+                    _histogram_values[i] = (float)iidx_button_count[i];
                     if (iidx_button_count[i]>max) max = iidx_button_count[i];
                 }
-                PlotHistogram("##values", histogram_values, 8, 0, NULL, 0.0f, (float)max, ImVec2(300, 200));
+                PlotHistogram("##values", _histogram_values, 8, 0, NULL, 0.0f, (float)max, ImVec2(300, 200));
             }
 
             if (Button("test"))
@@ -268,9 +273,17 @@ int main(int, char**)
                 if (TreeNode("Button size & padding")){
                     int _iidx_button_size[2] = {(int)iidx_button_size.x, (int)iidx_button_size.y};
                     int _iidx_scr_button_size[2] = {(int)iidx_scr_button_size.x, (int)iidx_scr_button_size.y};
-                    SliderInt2("button size", _iidx_button_size, 10, 200);
-                    SliderInt2("scr button size", _iidx_scr_button_size, 10, 200);
-                    SliderInt("button dummy size", &iidx_button_dummy_size, 0, 200);
+                    SliderInt2("button size", _iidx_button_size, 10, 150);
+                    SliderInt2("scr button size", _iidx_scr_button_size, 10, 100);
+                    if (iidx_button_layout_style == 0) {
+                        BeginDisabled();
+                        SliderInt("button dummy size", &iidx_button_dummy_size, 0, (int)iidx_button_size.y);
+                        EndDisabled();
+                    }
+                    else{
+                        SliderInt("button dummy size", &iidx_button_dummy_size, 0, (int)iidx_button_size.y);
+                    }
+                    
                     iidx_button_size.x = (float)_iidx_button_size[0];
                     iidx_button_size.y = (float)_iidx_button_size[1];
                     iidx_scr_button_size.x = (float)_iidx_scr_button_size[0];  
@@ -278,7 +291,9 @@ int main(int, char**)
                     TreePop();
                 }
 
-                SeparatorText("histogram graphics");
+                if (TreeNode("histogram view")){
+                    
+                }
                 SeparatorText("button input binding");
                 SeparatorText("button input binding");
             }
