@@ -400,7 +400,7 @@ int main(int, char**)
 }
 
 // 全局键盘钩子回调函数
-int handle_hook_key_press(bool& _press_down, WPARAM wParam, DWORD vkcode, int* _key_config, bool* _iidx_key_press_situation)
+static int handle_hook_key_press(bool& _press_down, WPARAM wParam, DWORD vkcode, int* _key_config, bool* _iidx_key_press_situation)
 {
     if (wParam == WM_KEYDOWN){
         for(int i = 0; i<7;i++){
