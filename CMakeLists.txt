@@ -24,7 +24,7 @@ set(IMGUI_SOURCES
 
 set(RESOURCE_FILES resources.rc)
 
-add_executable(${PROJECT_NAME} main.cpp keyhook.cpp ${IMGUI_SOURCES} C:/Pine/Prog/PineKey/resources.rc)
+add_executable(${PROJECT_NAME} main.cpp ${IMGUI_SOURCES} C:/Pine/Prog/PineKey/resources.rc)
 
 include_directories(C:/Pine/Prog/PineKey/include/ ${IMGUI_DIR} ${IMGUI_DIR}/backends ${PINEKEY_DIR})
     
