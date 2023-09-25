@@ -1,4 +1,4 @@
-#define DEBUG
+//#define DEBUG
 
 #include <map>
 #include <windows.h>
@@ -15,7 +15,6 @@
 #if defined(IMGUI_IMPL_OPENGL_ES2)
 #include <GLES2/gl2.h>
 #endif
-
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1900) && !defined(IMGUI_DISABLE_WIN32_FUNCTIONS)
 #pragma comment(lib, "legacy_stdio_definitions")
@@ -177,6 +176,7 @@ std::map<int, const char *> vkCodeToKeyName = {
     {0xE2, "OEM_102"}};
 
 // 全局变量
+static const char* version = "v0.0a";
 static float f = 0.0f;
 static int counter = 0; // fps计算
 bool show_main_window = true;
@@ -184,6 +184,7 @@ ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 0.00f);
 static int iidx_button_count[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 static float _histogram_values[8] = {};
 static bool iidx_key_pressed_situation[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+static int iidx_key_pressed_window_per_frame[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 static HHOOK hHook = NULL;
 static int bind_button_id = -1; // 待绑定按键编号 -1为无
 static bool key_down_flag[8] = {0, 0, 0, 0, 0, 0, 0, 0}; // 避免连击
@@ -287,7 +288,7 @@ int main(int, char **)
     // ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());
     // IM_ASSERT(font != nullptr);
 
-    // Main loop
+    // 主循环
     while (!glfwWindowShouldClose(window))
     {
         // Poll and handle events (inputs, window resize, etc.)
@@ -309,8 +310,8 @@ int main(int, char **)
         // window prop.
         const ImGuiViewport *main_viewport = GetMainViewport();
         SetNextWindowPos(ImVec2(main_viewport->WorkPos.x + 300, main_viewport->WorkPos.y + 100), ImGuiCond_FirstUseEver);
-        // SetNextWindowSize(ImVec2(500, 600), ImGuiCond_FirstUseEver);
-        SetNextWindowSizeConstraints(ImVec2(550, -1), ImVec2(550, FLT_MAX));
+        SetNextWindowSize(ImVec2(500, -1), ImGuiCond_FirstUseEver);
+        // SetNextWindowSizeConstraints(ImVec2(450, -1), ImVec2(450, FLT_MAX));
 
         // style
         ImGuiStyle &style = GetStyle();
@@ -330,7 +331,10 @@ int main(int, char **)
 
         // 主窗口
         {
-            Begin("PineKey", &show_main_window, main_window_flags);
+            char buf[128];
+            sprintf(buf, "Pinekey %s FPS: %.1f ###PineKey_main",version , io.Framerate);
+
+            Begin(buf, &show_main_window, main_window_flags);
 
             SeparatorText("Key overlay");
             Dummy(ImVec2(5, 0));
@@ -348,9 +352,9 @@ int main(int, char **)
                         PushStyleColor(ImGuiCol_Button, ImVec4(0.7f, 0.0f, 0.0f, 0.3f));
                     PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.7f, 0.0f, 0.0f, 0.8f));
                     PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.7f, 0.0f, 0.0f, 0.8f));
-                    PushFont(my_small_font);
+                    //PushFont(my_small_font);
                     Button(std::to_string(iidx_button_count[7]).c_str(), iidx_button_size); 
-                    PopFont();
+                    //PopFont();
                     PopStyleColor(3);
                     SameLine();
                 }
@@ -480,9 +484,8 @@ int main(int, char **)
                         max = iidx_button_count[i];
                 }
                 PlotHistogram("##values", _histogram_values, 8, 0, NULL, 0.0f, (float)max, ImVec2(300, 200));
+                NewLine();
             }
-
-            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
 
             // 底部下拉菜单
             if (CollapsingHeader("Config"))
@@ -593,12 +596,13 @@ int main(int, char **)
                 }
             }
 
-            if (CollapsingHeader("Help"))
+            if (CollapsingHeader("About"))
             {
                 PushStyleColor(ImGuiCol_Separator, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
                 SeparatorText("ABOUT THIS TOOL:");
                 PopStyleColor();
-                Text("This tool is a music game auxiliary tool that visualizes the input of keys, joysticks, and game controllers.");
+                Text("This prog is a music game tool that visualizes the input of keys, joysticks, and game controllers.");
+                TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "DEVELOP VERSION! v0.0a");
                 Text("Features:");
                 BulletText("Real-time display of pressed keys.");
                 BulletText("Count for each key count, total count, realtime and average KPS. Display of changes in average KPS.");
