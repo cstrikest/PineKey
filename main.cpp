@@ -141,11 +141,11 @@ int main(int, char **)
             // 计算kps
             if (++_frame_count >= kps_fresh_frame)
             {
-                kps = _count/(kps_fresh_frame/io.Framerate);
+                kps = _count / (kps_fresh_frame / io.Framerate);
                 _frame_count = 0;
                 _count = 0;
             }
-            
+
             char buf[64];
             sprintf(buf, "Pinekey %s FPS: %.1f ###PineKey_main", version, io.Framerate);
 
@@ -319,9 +319,27 @@ int main(int, char **)
                 PlotHistogram("##values", _histogram_values, 8, 0, NULL, 0.0f, io.Framerate / key_press_window_max_scale, ImVec2(200, histogram_height));
 
                 EndTable();
-                NewLine();
             }
 
+            // KPS
+            if (show_kps || show_kps_plot)
+            {
+                SeparatorText("KPS");
+                if (show_kps)
+                    TextWrapped(std::to_string(kps).c_str());
+                if (show_kps_plot)
+                {
+                    kpsHistory[currentIdx] = (float)kps;
+                    currentIdx = (currentIdx + 1) % 200;
+                    float displayData[200];
+                    for (int i = 0; i < 200; i++)
+                    {
+                        int idx = (currentIdx + i) % 200;
+                        displayData[i] = kpsHistory[idx];
+                    }
+                    ImGui::PlotLines(std::to_string(kps).c_str(), displayData, 200, 0, NULL, 0.0f, 50.0f, ImVec2(400, 60));
+                }
+            }
             // 底部下拉菜单
             if (CollapsingHeader("Config"))
             {
@@ -336,8 +354,6 @@ int main(int, char **)
                 if (Button("set default", ImVec2(100, 20)))
                 {
                     enabled_histogram = false;
-                    enabled_all_kps = true;  // TODO:
-                    enabled_spec_kps = true; // TODO:
                     iidx_play_position = 0;
                     iidx_button_layout_style = 1;
                     iidx_button_default_color_style = 1;
@@ -347,7 +363,13 @@ int main(int, char **)
                     iidx_scr_button_size.y = 70;
                     iidx_button_dummy_size = 15;
                     iidx_button_show_num = true; // TODO:
-                    histogram_height = 200;
+                    histogram_height = 130;
+                    iidx_button_show_num = true;
+                    key_press_window_max_scale = 2.0f;
+                    show_kps = false;
+                    show_kps_plot = false;
+                    kps_plot_range_time = 10; // 存几秒的Kps
+                    kps_fresh_frame = 30;
                 }
 
                 // 柱状图
@@ -441,14 +463,14 @@ int main(int, char **)
                     TreePop();
                 }
 
-                //KPS
+                // KPS
                 if (TreeNode("KPS config"))
                 {
                     Checkbox("show kps", &show_kps);
                     SameLine();
                     Checkbox("show kps graph", &show_kps_plot);
                     SetNextItemWidth(200);
-                    SliderInt("kps refresh frame", &kps_fresh_frame, 2, 60);
+                    SliderInt("kps refresh frame", &kps_fresh_frame, 15, 60);
                     SetNextItemWidth(200);
                     SliderInt("kps plot history time (seconds)", &kps_plot_range_time, 2, 300);
                     TreePop();

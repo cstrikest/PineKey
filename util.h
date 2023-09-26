@@ -168,6 +168,25 @@ std::map<int, const char *> vkCodeToKeyName = {
     {0xDF, "OEM_8"},
     {0xE2, "OEM_102"}};
 
+// TODO: 需要加载的配置
+static bool enabled_histogram = false;
+static int iidx_button_layout_style = 1;         // 显示按键布局 0一条线 1iidx默认布局 2平铺
+static bool iidx_button_default_color_style = 1; // 显示按键颜色 0单色 1默认红蓝
+static int iidx_play_position = 0;               // iidx游玩位置 0 1p 1 2p
+static ImVec2 iidx_button_size(30, 60);          // iidx按键长宽
+static ImVec2 iidx_scr_button_size(60, 70);      // iidx皿按键长宽
+static int iidx_button_dummy_size = 15;          // iidx默认布局横向填充空白大小
+static int histogram_height = 130;
+static bool iidx_button_show_num = true;
+static int key_count[8] = {0, 0, 0, 0, 0, 0, 0, 0}; // 1~7号键按键 皿 计数
+static int key_config[8] = {83, 68, 70, 32, 74, 75, 76, 176};
+static int all_count;
+static float key_press_window_max_scale = 2.0f;
+static bool show_kps = false;
+static bool show_kps_plot = false;
+static int kps_plot_range_time = 10; // 存几秒的Kps
+static int kps_fresh_frame = 30;
+
 // 全局变量
 static const char* version = "v0.0a";
 static float f = 0.0f;
@@ -183,24 +202,5 @@ static int key_to_bind = -1; // 待绑定按键编号 -1为无
 static int _frame_count = 0;
 static int _count = 0;
 static int kps = 0;
-
-// TODO: 需要加载的配置
-static bool enabled_histogram = false;
-static bool enabled_all_kps = true;
-static bool enabled_spec_kps = true;
-static int iidx_button_layout_style = 1;         // 显示按键布局 0一条线 1iidx默认布局 2平铺
-static bool iidx_button_default_color_style = 1; // 显示按键颜色 0单色 1默认红蓝
-static int iidx_play_position = 0;               // iidx游玩位置 0 1p 1 2p
-static ImVec2 iidx_button_size(30, 60);          // iidx按键长宽
-static ImVec2 iidx_scr_button_size(60, 70);      // iidx皿按键长宽
-static int iidx_button_dummy_size = 15;          // iidx默认布局横向填充空白大小
-static int histogram_height = 200;
-static bool iidx_button_show_num = true;
-static int key_count[8] = {0, 0, 0, 0, 0, 0, 0, 0}; // 1~7号键按键 皿 计数
-static int key_config[8] = {83, 68, 70, 32, 74, 75, 76, 176};
-static int all_count;
-static float key_press_window_max_scale = 2.0f;
-static bool show_kps = false;
-static bool show_kps_plot = false;
-static int kps_plot_range_time = 10;
-static int kps_fresh_frame = 30;
+int currentIdx = 0;
+float kpsHistory[600] = {0}; // kps图缓存
