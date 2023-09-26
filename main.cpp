@@ -19,6 +19,17 @@ int main(int, char **)
 {
     SetGlobalHook();
 
+    try
+    {
+        ini_getl("Key overlay", "val", -1, ini_file);
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+        return -1;
+    }
+    
+
     glfwSetErrorCallback(glfw_error_callback);
     if (!glfwInit())
         return 1;
@@ -149,18 +160,18 @@ int main(int, char **)
             char buf[64];
             sprintf(buf, "Pinekey %s FPS: %.1f ###PineKey_main", version, io.Framerate);
 
-            Begin(buf, &main_win_flag, main_window_flags);
+            Begin(buf, &main_window_close_flag, main_window_flags);
 
             // 按键图形
             SeparatorText("Key overlay");
             Dummy(ImVec2(5, 0));
             SameLine();
             BeginGroup();
-            switch (iidx_button_layout_style)
+            switch (key_style)
             {
             case 0: // line style
                 // 1P皿
-                if (!iidx_play_position)
+                if (!play_position)
                 {
                     if (is_key_pressed[7] == 1)
                         PushStyleColor(ImGuiCol_Button, ImVec4(0.9f, 0.0f, 0.0f, 0.9f));
@@ -168,7 +179,7 @@ int main(int, char **)
                         PushStyleColor(ImGuiCol_Button, ImVec4(0.7f, 0.0f, 0.0f, 0.3f));
                     PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.7f, 0.0f, 0.0f, 0.8f));
                     PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.7f, 0.0f, 0.0f, 0.8f));
-                    Button(iidx_button_show_num ? std::to_string(key_press_count[7]).c_str() : "S", iidx_button_size);
+                    Button(key_count_num ? std::to_string(key_press_count[7]).c_str() : "S", iidx_button_size);
                     PopStyleColor(3);
                     SameLine();
                 }
@@ -176,7 +187,7 @@ int main(int, char **)
                 {
                     bool is_upper_button = i % 2;
                     PushID(i);
-                    if (iidx_button_default_color_style)
+                    if (key_color_style)
                     {
                         // 默认红蓝
                         if (is_key_pressed[i] == 1)
@@ -185,19 +196,19 @@ int main(int, char **)
                             PushStyleColor(ImGuiCol_Button, ImVec4(is_upper_button ? 0.0f : 0.7f, is_upper_button ? 0.0f : 0.7f, 0.7f, 0.3f));
                         PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.7f, 0.1f, 0.1f, 0.8f));
                         PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.7f, 0.1f, 0.1f, 0.8f));
-                        Button(iidx_button_show_num ? std::to_string(key_press_count[i]).c_str() : std::to_string(i).c_str(), iidx_button_size);
+                        Button(key_count_num ? std::to_string(key_press_count[i]).c_str() : std::to_string(i).c_str(), iidx_button_size);
                         PopStyleColor(3);
                     }
                     else
                     { // 单色
-                        Button(iidx_button_show_num ? std::to_string(key_press_count[i]).c_str() : std::to_string(i).c_str(), iidx_button_size);
+                        Button(key_count_num ? std::to_string(key_press_count[i]).c_str() : std::to_string(i).c_str(), iidx_button_size);
                     }
                     PopID();
                     SameLine();
                 }
 
                 // 2P皿
-                if (iidx_play_position)
+                if (play_position)
                 {
                     if (is_key_pressed[7] == 1)
                         PushStyleColor(ImGuiCol_Button, ImVec4(0.9f, 0.0f, 0.0f, 0.9f));
@@ -205,7 +216,7 @@ int main(int, char **)
                         PushStyleColor(ImGuiCol_Button, ImVec4(0.7f, 0.0f, 0.0f, 0.3f));
                     PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.7f, 0.0f, 0.0f, 0.8f));
                     PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.7f, 0.0f, 0.0f, 0.8f));
-                    Button(iidx_button_show_num ? std::to_string(key_press_count[7]).c_str() : "S", iidx_button_size);
+                    Button(key_count_num ? std::to_string(key_press_count[7]).c_str() : "S", iidx_button_size);
                     PopStyleColor(3);
                 }
                 else
@@ -218,17 +229,17 @@ int main(int, char **)
             case 1: // IIDX controller style
 
                 // 1P 皿
-                if (!iidx_play_position)
+                if (!play_position)
                 {
                     BeginGroup();
-                    Dummy(ImVec2(1, iidx_button_dummy_size - iidx_scr_button_size.y));
+                    Dummy(ImVec2(1, key_dummy_size - iidx_scr_button_size.y));
                     if (is_key_pressed[7] == 1)
                         PushStyleColor(ImGuiCol_Button, ImVec4(0.9f, 0.0f, 0.0f, 0.9f));
                     else
                         PushStyleColor(ImGuiCol_Button, ImVec4(0.7f, 0.0f, 0.0f, 0.3f));
                     PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.7f, 0.0f, 0.0f, 0.8f));
                     PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.7f, 0.0f, 0.0f, 0.8f));
-                    Button(iidx_button_show_num ? std::to_string(key_press_count[7]).c_str() : "S", iidx_scr_button_size);
+                    Button(key_count_num ? std::to_string(key_press_count[7]).c_str() : "S", iidx_scr_button_size);
                     PopStyleColor(3);
                     EndGroup();
                     SameLine();
@@ -240,8 +251,8 @@ int main(int, char **)
                     BeginGroup();
                     PushID(i);
                     if (!is_upper_button)
-                        Dummy(ImVec2(1, iidx_button_dummy_size));
-                    if (iidx_button_default_color_style)
+                        Dummy(ImVec2(1, key_dummy_size));
+                    if (key_color_style)
                     { // 默认红蓝
                         if (is_key_pressed[i] == 1)
                             PushStyleColor(ImGuiCol_Button, ImVec4(0.9f, 0.0f, 0.0f, 0.9f));
@@ -249,12 +260,12 @@ int main(int, char **)
                             PushStyleColor(ImGuiCol_Button, ImVec4(is_upper_button ? 0.0f : 0.7f, is_upper_button ? 0.0f : 0.7f, 0.7f, 0.3f));
                         PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.7f, 0.1f, 0.1f, 0.8f));
                         PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.7f, 0.1f, 0.1f, 0.8f));
-                        Button(iidx_button_show_num ? std::to_string(key_press_count[i]).c_str() : std::to_string(i).c_str(), iidx_button_size);
+                        Button(key_count_num ? std::to_string(key_press_count[i]).c_str() : std::to_string(i).c_str(), iidx_button_size);
                         PopStyleColor(3);
                     }
                     else
                     { // 单色
-                        Button(iidx_button_show_num ? std::to_string(key_press_count[i]).c_str() : std::to_string(i).c_str(), iidx_button_size);
+                        Button(key_count_num ? std::to_string(key_press_count[i]).c_str() : std::to_string(i).c_str(), iidx_button_size);
                     }
                     PopID();
                     EndGroup();
@@ -262,17 +273,17 @@ int main(int, char **)
                 }
 
                 // 2P皿
-                if (iidx_play_position)
+                if (play_position)
                 {
                     BeginGroup();
-                    Dummy(ImVec2(1, iidx_button_dummy_size - iidx_scr_button_size.y));
+                    Dummy(ImVec2(1, key_dummy_size - iidx_scr_button_size.y));
                     if (is_key_pressed[7] == 1)
                         PushStyleColor(ImGuiCol_Button, ImVec4(0.9f, 0.0f, 0.0f, 0.9f));
                     else
                         PushStyleColor(ImGuiCol_Button, ImVec4(0.7f, 0.0f, 0.0f, 0.3f));
                     PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.7f, 0.0f, 0.0f, 0.8f));
                     PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.7f, 0.0f, 0.0f, 0.8f));
-                    Button(iidx_button_show_num ? std::to_string(key_press_count[7]).c_str() : "S", iidx_scr_button_size);
+                    Button(key_count_num ? std::to_string(key_press_count[7]).c_str() : "S", iidx_scr_button_size);
                     PopStyleColor(3);
                     EndGroup();
                 }
@@ -316,16 +327,16 @@ int main(int, char **)
                     _histogram_values[i] = (float)key_pressed_time[i];
                 }
 
-                PlotHistogram("##values", _histogram_values, 8, 0, NULL, 0.0f, io.Framerate / key_press_window_max_scale, ImVec2(200, histogram_height));
+                PlotHistogram("##values", _histogram_values, 8, 0, NULL, 0.0f, io.Framerate / press_time_scale, ImVec2(200, histogram_height));
 
                 EndTable();
             }
 
             // KPS
-            if (show_kps || show_kps_plot)
+            if (show_kps_test || show_kps_plot)
             {
                 SeparatorText("KPS");
-                if (show_kps)
+                if (show_kps_test)
                     TextWrapped(std::to_string(kps).c_str());
                 if (show_kps_plot)
                 {
@@ -354,21 +365,20 @@ int main(int, char **)
                 if (Button("set default", ImVec2(100, 20)))
                 {
                     enabled_histogram = false;
-                    iidx_play_position = 0;
-                    iidx_button_layout_style = 1;
-                    iidx_button_default_color_style = 1;
+                    play_position = 0;
+                    key_style = 1;
+                    key_color_style = 1;
                     iidx_button_size.x = 30;
                     iidx_button_size.y = 60;
                     iidx_scr_button_size.x = 60;
                     iidx_scr_button_size.y = 70;
-                    iidx_button_dummy_size = 15;
-                    iidx_button_show_num = true; // TODO:
+                    key_dummy_size = 15;
+                    key_count_num = true; // TODO:
                     histogram_height = 130;
-                    iidx_button_show_num = true;
-                    key_press_window_max_scale = 2.0f;
-                    show_kps = false;
+                    press_time_scale = 2.0f;
+                    show_kps_test = false;
                     show_kps_plot = false;
-                    kps_plot_range_time = 10; // 存几秒的Kps
+                    kps_plot_history_time = 10; // 存几秒的Kps
                     kps_fresh_frame = 30;
                 }
 
@@ -385,29 +395,29 @@ int main(int, char **)
                     EndDisabled();
 
                 // 按键按下窗口柱状图上限倍率
-                SliderFloat("key press window graph max scale", &key_press_window_max_scale, 0.2f, 10.0f);
-                Text("\t\tmax in %.0f ms", 1000.0f / key_press_window_max_scale);
+                SliderFloat("key press window graph max scale", &press_time_scale, 0.2f, 10.0f);
+                Text("\t\tmax in %.0f ms", 1000.0f / press_time_scale);
 
                 // 按键样式
                 if (TreeNode("Button style"))
                 {
-                    RadioButton("line style", &iidx_button_layout_style, 0);
+                    RadioButton("line style", &key_style, 0);
                     SameLine();
-                    RadioButton("IIDX style", &iidx_button_layout_style, 1);
+                    RadioButton("IIDX style", &key_style, 1);
                     SameLine();
                     BeginDisabled();
-                    RadioButton("flat style", &iidx_button_layout_style, 2);
+                    RadioButton("flat style", &key_style, 2);
                     EndDisabled();
                     SameLine();
                     HelpMarker("Not supported yet.");
 
-                    RadioButton("1P", &iidx_play_position, 0);
+                    RadioButton("1P", &play_position, 0);
                     SameLine();
-                    RadioButton("2P", &iidx_play_position, 1);
+                    RadioButton("2P", &play_position, 1);
 
-                    Checkbox("color button", &iidx_button_default_color_style);
+                    Checkbox("color button", &key_color_style);
                     SameLine();
-                    Checkbox("show count number on keys", &iidx_button_show_num);
+                    Checkbox("show count number on keys", &key_count_num);
                     TreePop();
                 }
 
@@ -417,17 +427,17 @@ int main(int, char **)
                     int _iidx_button_size[2] = {(int)iidx_button_size.x, (int)iidx_button_size.y};
                     int _iidx_scr_button_size[2] = {(int)iidx_scr_button_size.x, (int)iidx_scr_button_size.y};
                     SliderInt2("button size", _iidx_button_size, 10, 70);
-                    if (iidx_button_layout_style == 0)
+                    if (key_style == 0)
                     {
                         BeginDisabled();
                         SliderInt2("scr button size", _iidx_scr_button_size, 10, 100);
-                        SliderInt("button dummy size", &iidx_button_dummy_size, 0, (int)iidx_button_size.y);
+                        SliderInt("button dummy size", &key_dummy_size, 0, (int)iidx_button_size.y);
                         EndDisabled();
                     }
                     else
                     {
                         SliderInt2("scr button size", _iidx_scr_button_size, 10, 100);
-                        SliderInt("button dummy size", &iidx_button_dummy_size, 0, (int)iidx_button_size.y);
+                        SliderInt("button dummy size", &key_dummy_size, 0, (int)iidx_button_size.y);
                     }
 
                     iidx_button_size.x = (float)_iidx_button_size[0];
@@ -466,13 +476,13 @@ int main(int, char **)
                 // KPS
                 if (TreeNode("KPS config"))
                 {
-                    Checkbox("show kps", &show_kps);
+                    Checkbox("show kps", &show_kps_test);
                     SameLine();
                     Checkbox("show kps graph", &show_kps_plot);
                     SetNextItemWidth(200);
                     SliderInt("kps refresh frame", &kps_fresh_frame, 15, 60);
                     SetNextItemWidth(200);
-                    SliderInt("kps plot history time (seconds)", &kps_plot_range_time, 2, 300);
+                    SliderInt("kps plot history time (seconds)", &kps_plot_history_time, 2, 300);
                     TreePop();
                 }
             }
@@ -500,7 +510,7 @@ int main(int, char **)
         }
 
         // 关闭窗口
-        if (!main_win_flag)
+        if (!main_window_close_flag)
             break;
 
         // 渲染
