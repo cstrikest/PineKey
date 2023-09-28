@@ -4,12 +4,11 @@ cmake_minimum_required(VERSION 3.10)
 
 project(PineKey)
 
-set(GLFW_LIBRARY C:/Pine/Prog/PineKey/lib/glfw3.dll)
+
+set(GLFW_LIBRARY ${CMAKE_CURRENT_SOURCE_DIR}/lib/glfw3.dll)
 
 # imgui paths
-set(IMGUI_DIR C:/Pine/Prog/PineKey/imgui-docking)
-
-set(PINEKEY_DIR C:/Pine/Prog/PineKey)
+set(IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/imgui-docking)
 
 # imgui source files
 set(IMGUI_SOURCES 
@@ -24,14 +23,15 @@ set(IMGUI_SOURCES
 
 set(RESOURCE_FILES resources.rc)
 
-add_executable(${PROJECT_NAME} main.cpp ${IMGUI_SOURCES} C:/Pine/Prog/PineKey/resources.rc)
+set(CMAKE_EXE_LINKER_FLAGS "-static")
 
-include_directories(C:/Pine/Prog/PineKey/include/ ${IMGUI_DIR} ${IMGUI_DIR}/backends ${PINEKEY_DIR})
+add_executable(${PROJECT_NAME} main.cpp ${IMGUI_SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/resources.rc)
+
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/ ${IMGUI_DIR} ${IMGUI_DIR}/backends)
     
-target_link_libraries(${PROJECT_NAME} ${GLFW_LIBRARY} opengl32.lib gdi32.lib shell32.lib)
+target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARY} ${GLFW_LIBRARY} opengl32.lib gdi32.lib shell32.lib)
 
 set_target_properties(PineKey PROPERTIES WIN32_EXECUTABLE TRUE)
 
-#target_sources(PineKey PUBLIC C:/Pine/Prog/PineKey/resources.rc)
+target_sources(PineKey PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/resources.rc)
 
-# TODO: Additional setup if needed
