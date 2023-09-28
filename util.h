@@ -1,6 +1,6 @@
 #pragma once
 
-#define VERSION "v0.4a"
+#define VERSION "v0.5"
 
 #include <map>
 #include <windows.h>
@@ -177,7 +177,6 @@ static float f = 0.0f;
 static int counter = 0; // fps计算
 bool main_window_close_flag = true;
 ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 0.00f);
-static int key_press_count[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 static float _histogram_values[8] = {};
 static bool is_key_pressed[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 static int key_pressed_window_time[8] = {0, 0, 0, 0, 0, 0, 0, 0};
@@ -185,15 +184,17 @@ static HHOOK hHook = NULL;
 static int key_to_bind = -1; // 待绑定按键编号 -1为无
 static int _frame_count = 0;
 static int _count = 0;
-static int kps = 0;
-int currentIdx = 0;
-float kpsHistory[600] = {0}; // kps图缓存
+static float kps = 0;
+static int currentIdx = 0;
+static int count_sum = 0;
+static float kpsHistory[50] = {0}; // kps图缓存
+static float displayData[80] = {0};
 
 // config
 // [data]
 //static int key_count[8] = {0, 0, 0, 0, 0, 0, 0, 0}; // 1~7号键按键 皿 计数
 static int key_vkcode_config[8] = {83, 68, 70, 32, 74, 75, 76, 77};
-static int all_count;
+static int key_press_count[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 
 // [Key overlay]
 static int key_style = 1;         // 显示按键布局 0一条线 1iidx默认布局 2平铺

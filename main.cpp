@@ -70,6 +70,10 @@ int main(int, char **)
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
+    // 字体
+    io.Fonts->AddFontDefault();
+    ImFont *font_impact = io.Fonts->AddFontFromFileTTF("c:/windows/fonts/impact.ttf", 32.0f);
+
     // 小字体test
     {
         // Get the default font's config
@@ -141,14 +145,6 @@ int main(int, char **)
                     key_pressed_window_time[i] += 1;
                 else if (key_pressed_window_time[i] != 0)
                     key_pressed_window_time[i] = 0;
-            }
-
-            // 计算kps
-            if (++_frame_count >= kps_fresh_frame)
-            {
-                kps = _count / (kps_fresh_frame / io.Framerate);
-                _frame_count = 0;
-                _count = 0;
             }
 
             char buf[64];
@@ -290,9 +286,16 @@ int main(int, char **)
                 break;
             }
             EndGroup();
-            SameLine();
-            Dummy(ImVec2(8, 0));
+
             NewLine();
+            count_sum = 0;
+            for (int i = 0; i < 8; i++)
+                count_sum += key_press_count[i];
+            Dummy(ImVec2(GetContentRegionAvail().x * 0.3f, 0.0f));
+            SameLine();
+            PushFont(font_impact);
+            Text((std::string("Total: ") + std::to_string(count_sum)).c_str());
+            PopFont();
 
             // 柱状图
             if (enabled_histogram)
@@ -330,21 +333,40 @@ int main(int, char **)
             if (show_kps_text || show_kps_plot)
             {
                 SeparatorText("KPS");
-                if (show_kps_text)
-                    TextWrapped(std::to_string(kps).c_str());
+                if (++_frame_count >= kps_fresh_frame)
+                {
+                    kps = (float)_count / ((float)kps_fresh_frame / io.Framerate);
+                    _frame_count = 0;
+                    _count = 0;
+                }
+
                 if (show_kps_plot)
                 {
-                    kpsHistory[currentIdx] = (float)kps;
-                    currentIdx = (currentIdx + 1) % 200;
-                    float displayData[200];
-                    for (int i = 0; i < 200; i++)
+                    if (_frame_count == 0)
                     {
-                        int idx = (currentIdx + i) % 200;
-                        displayData[i] = kpsHistory[idx];
+                        kpsHistory[currentIdx] = (float)kps;
+                        currentIdx = (currentIdx + 1) % 80;
+                        for (int i = 0; i < 80; i++)
+                            displayData[i] = kpsHistory[(currentIdx +1) % 80];
                     }
-                    ImGui::PlotLines(std::to_string(kps).c_str(), displayData, 200, 0, NULL, 0.0f, 50.0f, ImVec2(400, 60));
+                    ImGui::PlotLines("", displayData, 80, 0, NULL, 0.0f, 48.0f, ImVec2(200, 60));
+                }
+
+                if (show_kps_text)
+                {
+                    SameLine();
+                    Text("KPS: %.1f", kps);
                 }
             }
+
+            NewLine();
+            Separator();
+            Separator();
+            Separator();
+            Separator();
+            Separator();
+            NewLine();
+
             // 底部下拉菜单
             if (CollapsingHeader("Config"))
             {
@@ -352,6 +374,16 @@ int main(int, char **)
                 if (Button("Save config", ImVec2(100, 20)))
                 {
                     SaveConfig(0);
+                }
+                SameLine();
+
+                // 清空计数按钮
+                if (Button("clear total", ImVec2(100, 20)))
+                {
+                    for (int i = 0; i < 8; i++)
+                        key_press_count[i] = 0;
+                    SameLine();
+                    HelpMarker("Kill the process now. You still have a chance to get your counting back. hah");
                 }
                 SameLine();
 
@@ -369,13 +401,15 @@ int main(int, char **)
                 SetNextItemWidth(120);
                 if (!enabled_histogram)
                     BeginDisabled();
-                SliderInt("histogram height", &histogram_height, 128, 512);
+                SliderInt("histogram height", &histogram_height, 32, 512);
                 if (!enabled_histogram)
                     EndDisabled();
 
                 // 按键按下窗口柱状图上限倍率
-                SliderFloat("key press window graph max scale", &press_time_scale, 0.2f, 10.0f);
-                Text("\t\tmax in %.0f ms", 1000.0f / press_time_scale);
+                SliderFloat("key press time scale", &press_time_scale, 0.1f, 16.0f);
+                Text("");
+                SameLine(GetContentRegionAvail().x - 100);
+                Text("max in %.0f ms", 1000.0f / press_time_scale);
 
                 // 按键样式
                 if (TreeNode("Button style"))
@@ -449,10 +483,8 @@ int main(int, char **)
                         }
                     }
                     EndTable();
+
                     NewLine();
-                    if (Button("reset all key"))
-                        for (int i = 0; i < 8; i++)
-                            key_vkcode_config[i] = 0;
                     TreePop();
                 }
 
@@ -475,11 +507,13 @@ int main(int, char **)
                 PushStyleColor(ImGuiCol_Separator, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
                 SeparatorText("ABOUT THIS TOOL:");
                 PopStyleColor();
-                Text("This prog is a music game tool that visualizes the input of keys, joysticks, and game controllers.");
+                Text("This prog is a music game tool that visualizes the input of keys,");
+                Text("joysticks, and game controllers.");
                 TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "DEVELOP VERSION! %s", VERSION);
                 Text("Features:");
                 BulletText("Real-time display of pressed keys.");
-                BulletText("Count for each key count, total count, realtime and average KPS. Display of changes in average KPS.");
+                BulletText("Count for each key count, total count, realtime and average KPS.");
+                Text("\tDisplay of changes in average KPS.");
                 BulletText("Statistics on the proportion of times each key is pressed.");
                 BulletText("Calculate the average hold time for each key press.");
                 Separator();
@@ -494,7 +528,10 @@ int main(int, char **)
 
         // 关闭窗口
         if (!main_window_close_flag)
+        {
+            SaveConfig(0);
             break;
+        }
 
         // 渲染
         Render();
@@ -546,7 +583,6 @@ static void handle_hook_key_press(WPARAM wParam, DWORD vkcode)
                     *(is_key_pressed + i) = true;
                     // 增加计数
                     *(key_press_count + i) += 1;
-                    all_count++;
                     _count++;
                 }
             }
@@ -607,18 +643,18 @@ void LoadConfig()
 {
     char buff[16];
     // 文件不存在
-    if (ini_getl("data", "all_count", -199024, ini_file) == -199024)
+    if (ini_getl("overlay", "key_style", -199024, ini_file) == -199024)
         SaveConfig(1);
     else
     {
         // [data]
         for (int i = 0; i < 8; i++)
         {
-            key_vkcode_config[i] = ini_getl("data", (std::string("key_vkcode_config") + std::to_string(i)).c_str(), -1, ini_file);
+            key_vkcode_config[i] = ini_getl("data", (std::string("key_vkcode_config_") + std::to_string(i)).c_str(), -1, ini_file);
             if (key_vkcode_config[i] == -1)
                 exit(-1);
+            key_press_count[i] = ini_getl("data", (std::string("key_press_count_") + std::to_string(i)).c_str(), -1, ini_file);
         }
-        all_count = ini_getl("data", "all_count", -1, ini_file);
 
         // [Key overlay]
         key_style = ini_getl("overlay", "key_style", -1, ini_file);
@@ -650,9 +686,9 @@ void SaveConfig(bool init_config)
     // [data]
     for (int i = 0; i < 8; i++)
     {
-        ini_putl("data", (std::string("key_vkcode_config") + std::to_string(i)).c_str(), key_vkcode_config[i], ini_file);
+        ini_putl("data", (std::string("key_vkcode_config_") + std::to_string(i)).c_str(), key_vkcode_config[i], ini_file);
+        ini_putl("data", (std::string("key_press_count_") + std::to_string(i)).c_str(), key_press_count[i], ini_file);
     }
-    ini_putl("data", "all_count", 0, ini_file);
 
     // [Key overlay]
     ini_putl("overlay", "key_style", key_style, ini_file);
@@ -684,8 +720,8 @@ void SetDefaultConfig(bool clear_all)
         for (int i = 0; i < 8; i++)
         {
             key_vkcode_config[i] = 0;
+            key_press_count[i] = 0;
         }
-        all_count = 0; // 清除总按键数
     }
 
     // [Key overlay]
