@@ -1,5 +1,7 @@
 #pragma once
 
+#define VERSION "v0.4a"
+
 #include <map>
 #include <windows.h>
 #include <WinUser.h>
@@ -169,33 +171,8 @@ std::map<int, const char *> vkCodeToKeyName = {
     {0xDF, "OEM_8"},
     {0xE2, "OEM_102"}};
 
-// config
-// [data]
-//static int key_count[8] = {0, 0, 0, 0, 0, 0, 0, 0}; // 1~7号键按键 皿 计数
-static int key_config[8] = {83, 68, 70, 32, 74, 75, 76, 176};
-static int all_count;
-
-// [Key overlay]
-static int key_style = 1;         // 显示按键布局 0一条线 1iidx默认布局 2平铺
-static bool key_color_style = 1; // 显示按键颜色 0单色 1默认红蓝
-static int play_position = 0;               // iidx游玩位置 0 1p 1 2p
-static ImVec2 iidx_button_size(30, 60);          // iidx按键长宽
-static ImVec2 iidx_scr_button_size(60, 70);      // iidx皿按键长宽
-static int key_dummy_size = 15;          // iidx默认布局横向填充空白大小
-static bool key_count_num = true;
-
-// [histogram]
-static bool enabled_histogram = false;
-static int histogram_height = 130;
-static float press_time_scale = 2.0f;
-static bool show_kps_test = false;
-static bool show_kps_plot = false;
-static int kps_plot_history_time = 10; // 存几秒的Kps
-static int kps_fresh_frame = 30;
-
 // 全局变量
 const char* ini_file = "./config.ini";
-static const char* version = "v0.0a";
 static float f = 0.0f;
 static int counter = 0; // fps计算
 bool main_window_close_flag = true;
@@ -203,7 +180,7 @@ ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 0.00f);
 static int key_press_count[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 static float _histogram_values[8] = {};
 static bool is_key_pressed[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-static int key_pressed_time[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+static int key_pressed_window_time[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 static HHOOK hHook = NULL;
 static int key_to_bind = -1; // 待绑定按键编号 -1为无
 static int _frame_count = 0;
@@ -211,3 +188,29 @@ static int _count = 0;
 static int kps = 0;
 int currentIdx = 0;
 float kpsHistory[600] = {0}; // kps图缓存
+
+// config
+// [data]
+//static int key_count[8] = {0, 0, 0, 0, 0, 0, 0, 0}; // 1~7号键按键 皿 计数
+static int key_vkcode_config[8] = {83, 68, 70, 32, 74, 75, 76, 77};
+static int all_count;
+
+// [Key overlay]
+static int key_style = 1;         // 显示按键布局 0一条线 1iidx默认布局 2平铺
+static bool key_color_style = 1; // 显示按键颜色 0单色 1默认红蓝
+static int play_position = 0;               // iidx游玩位置 0 1p 1 2p
+static int btn_size_x = 30;
+static int btn_size_y = 60;
+static int sbtn_size_x = 60;
+static int sbtn_size_y = 70;
+static int key_dummy_size = 15;          // iidx默认布局横向填充空白大小
+static bool key_count_num = true;
+
+// [histogram]
+static bool enabled_histogram = false;
+static int histogram_height = 130;
+static float press_time_scale = 2.0f;
+static bool show_kps_text = false;
+static bool show_kps_plot = false;
+static int kps_plot_history_time = 10; // 存几秒的Kps
+static int kps_fresh_frame = 30;

@@ -25,7 +25,7 @@ set(RESOURCE_FILES resources.rc)
 
 set(CMAKE_EXE_LINKER_FLAGS "-static")
 
-add_executable(${PROJECT_NAME} main.cpp ${IMGUI_SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/resources.rc)
+add_executable(${PROJECT_NAME} main.cpp ${CMAKE_CURRENT_SOURCE_DIR}/minini_13/minIni.c ${IMGUI_SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/resources.rc)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/ ${IMGUI_DIR} ${IMGUI_DIR}/backends)
     
