@@ -1,6 +1,6 @@
 #pragma once
 
-#define VERSION "v0.5"
+#define VERSION "v0.5.1"
 
 #include <map>
 #include <windows.h>
@@ -171,8 +171,36 @@ std::map<int, const char *> vkCodeToKeyName = {
     {0xDF, "OEM_8"},
     {0xE2, "OEM_102"}};
 
+// config
+// [data]
+// static int key_count[8] = {0, 0, 0, 0, 0, 0, 0, 0}; // 1~7号键按键 皿 计数
+static int key_vkcode_config[8] = {83, 68, 70, 32, 74, 75, 76, 77};
+static int key_press_count[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+
+// [Key overlay]
+static int key_style = 1;        // 显示按键布局 0一条线 1iidx默认布局 2平铺
+static bool key_color_style = 1; // 显示按键颜色 0单色 1默认红蓝
+static int play_position = 0;    // iidx游玩位置 0 1p 1 2p
+static int btn_size_x = 30;
+static int btn_size_y = 60;
+static int sbtn_size_x = 60;
+static int sbtn_size_y = 70;
+static int key_dummy_size = 15; // iidx默认布局横向填充空白大小
+static bool key_count_num = true;
+
+// [histogram]
+static bool enabled_histogram = false;
+static int histogram_height = 130;
+static float press_time_scale = 2.0f;
+
+// [KPS]
+static bool show_kps_text = false;
+static bool show_kps_plot = false;
+static int kps_fresh_frame = 30;
+static int kps_plot_length = 80;
+
 // 全局变量
-const char* ini_file = "./config.ini";
+const char *ini_file = "./config.ini";
 static float f = 0.0f;
 static int counter = 0; // fps计算
 bool main_window_close_flag = true;
@@ -187,31 +215,5 @@ static int _count = 0;
 static float kps = 0;
 static int currentIdx = 0;
 static int count_sum = 0;
-static float kpsHistory[50] = {0}; // kps图缓存
-static float displayData[80] = {0};
 
-// config
-// [data]
-//static int key_count[8] = {0, 0, 0, 0, 0, 0, 0, 0}; // 1~7号键按键 皿 计数
-static int key_vkcode_config[8] = {83, 68, 70, 32, 74, 75, 76, 77};
-static int key_press_count[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-
-// [Key overlay]
-static int key_style = 1;         // 显示按键布局 0一条线 1iidx默认布局 2平铺
-static bool key_color_style = 1; // 显示按键颜色 0单色 1默认红蓝
-static int play_position = 0;               // iidx游玩位置 0 1p 1 2p
-static int btn_size_x = 30;
-static int btn_size_y = 60;
-static int sbtn_size_x = 60;
-static int sbtn_size_y = 70;
-static int key_dummy_size = 15;          // iidx默认布局横向填充空白大小
-static bool key_count_num = true;
-
-// [histogram]
-static bool enabled_histogram = false;
-static int histogram_height = 130;
-static float press_time_scale = 2.0f;
-static bool show_kps_text = false;
-static bool show_kps_plot = false;
-static int kps_plot_history_time = 10; // 存几秒的Kps
-static int kps_fresh_frame = 30;
+float kpsHistory[500] = {0};

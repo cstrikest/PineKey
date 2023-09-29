@@ -113,7 +113,6 @@ int main(int, char **)
 #ifdef DEBUG
         ShowDemoWindow(nullptr);
 #endif
-
         // 窗口属性
         const ImGuiViewport *main_viewport = GetMainViewport();
         SetNextWindowPos(ImVec2(main_viewport->WorkPos.x + 300, main_viewport->WorkPos.y + 100), ImGuiCond_FirstUseEver);
@@ -146,6 +145,11 @@ int main(int, char **)
                 else if (key_pressed_window_time[i] != 0)
                     key_pressed_window_time[i] = 0;
             }
+
+            // 计算总数
+            count_sum = 0;
+            for (int i = 0; i < 8; i++)
+                count_sum += key_press_count[i];
 
             char buf[64];
             sprintf(buf, "Pinekey %s FPS: %.1f ###PineKey_main", VERSION, io.Framerate);
@@ -288,13 +292,10 @@ int main(int, char **)
             EndGroup();
 
             NewLine();
-            count_sum = 0;
-            for (int i = 0; i < 8; i++)
-                count_sum += key_press_count[i];
             Dummy(ImVec2(GetContentRegionAvail().x * 0.3f, 0.0f));
             SameLine();
             PushFont(font_impact);
-            Text((std::string("Total: ") + std::to_string(count_sum)).c_str());
+            Text("Total: %d", count_sum);
             PopFont();
 
             // 柱状图
@@ -333,29 +334,31 @@ int main(int, char **)
             if (show_kps_text || show_kps_plot)
             {
                 SeparatorText("KPS");
+
+                // 更新KPS
                 if (++_frame_count >= kps_fresh_frame)
                 {
                     kps = (float)_count / ((float)kps_fresh_frame / io.Framerate);
                     _frame_count = 0;
                     _count = 0;
+
+                    for (int i = kps_plot_length; i > 0; i--)
+                        kpsHistory[i] = kpsHistory[i - 1];
+                    kpsHistory[0] = kps;
                 }
 
                 if (show_kps_plot)
                 {
-                    if (_frame_count == 0)
-                    {
-                        kpsHistory[currentIdx] = (float)kps;
-                        currentIdx = (currentIdx + 1) % 80;
-                        for (int i = 0; i < 80; i++)
-                            displayData[i] = kpsHistory[(currentIdx +1) % 80];
-                    }
-                    ImGui::PlotLines("", displayData, 80, 0, NULL, 0.0f, 48.0f, ImVec2(200, 60));
+                    PlotLines("", kpsHistory, kps_plot_length, 0, NULL, 0.0f, 48.0f, ImVec2(GetContentRegionAvail().x, 80));
                 }
 
                 if (show_kps_text)
                 {
+                    Dummy(ImVec2(GetContentRegionAvail().x * 0.35f, 0.0f));
                     SameLine();
+                    PushFont(font_impact);
                     Text("KPS: %.1f", kps);
+                    PopFont();
                 }
             }
 
@@ -383,7 +386,7 @@ int main(int, char **)
                     for (int i = 0; i < 8; i++)
                         key_press_count[i] = 0;
                     SameLine();
-                    HelpMarker("Kill the process now. You still have a chance to get your counting back. hah");
+                    HelpMarker("This will clear you all history key press count.");
                 }
                 SameLine();
 
@@ -395,6 +398,8 @@ int main(int, char **)
 
                 // 柱状图
                 Checkbox("histogram", &enabled_histogram);
+                SameLine();
+                HelpMarker("Enable 2 histogram\n\t- each key's press count\n\t-each key's pressed time");
                 SameLine();
 
                 // 柱状图高度调整
@@ -452,6 +457,8 @@ int main(int, char **)
                     {
                         SliderInt("button dummy size", &key_dummy_size, 0, btn_size_y);
                     }
+                    SameLine();
+                    HelpMarker("Set the spaces between those keys.\nJust try.");
 
                     btn_size_x = _iidx_button_size[0];
                     btn_size_y = _iidx_button_size[1];
@@ -494,10 +501,16 @@ int main(int, char **)
                     Checkbox("show kps", &show_kps_text);
                     SameLine();
                     Checkbox("show kps graph", &show_kps_plot);
+                    SameLine();
+                    HelpMarker("Enable a plot shows that your kps's changing.");
                     SetNextItemWidth(200);
                     SliderInt("kps refresh frame", &kps_fresh_frame, 15, 60);
+                    SameLine();
+                    HelpMarker("Lower value brings faster kps fresh rate but bad accuracy.\nHigher fps monitor could help.");
                     SetNextItemWidth(200);
-                    SliderInt("kps plot history time (seconds)", &kps_plot_history_time, 2, 300);
+                    SliderInt("kps plot length", &kps_plot_length, 2, 400);
+                    SameLine();
+                    HelpMarker("Set how many kps sample point show in plot.");
                     TreePop();
                 }
             }
@@ -577,12 +590,12 @@ static void handle_hook_key_press(WPARAM wParam, DWORD vkcode)
             for (int i = 0; i < 8; i++)
             {
                 // 按下的是被绑定的按键 避免连击
-                if (vkcode == *(key_vkcode_config + i) && !*(is_key_pressed + i))
+                if (vkcode == key_vkcode_config[i] && !is_key_pressed[i])
                 {
                     // 触发是否被按下的数组
-                    *(is_key_pressed + i) = true;
+                    is_key_pressed[i] = true;
                     // 增加计数
-                    *(key_press_count + i) += 1;
+                    key_press_count[i] += 1;
                     _count++;
                 }
             }
@@ -592,9 +605,9 @@ static void handle_hook_key_press(WPARAM wParam, DWORD vkcode)
     {
         for (int i = 0; i < 8; i++)
         {
-            if (vkcode == *(key_vkcode_config + i) && *(is_key_pressed + i))
+            if (vkcode == key_vkcode_config[i] && is_key_pressed[i])
             {
-                *(is_key_pressed + i) = 0;
+                is_key_pressed[i] = 0;
             }
         }
     }
@@ -641,7 +654,6 @@ void RemoveGlobalHook()
 
 void LoadConfig()
 {
-    char buff[16];
     // 文件不存在
     if (ini_getl("overlay", "key_style", -199024, ini_file) == -199024)
         SaveConfig(1);
@@ -651,29 +663,30 @@ void LoadConfig()
         for (int i = 0; i < 8; i++)
         {
             key_vkcode_config[i] = ini_getl("data", (std::string("key_vkcode_config_") + std::to_string(i)).c_str(), -1, ini_file);
-            if (key_vkcode_config[i] == -1)
-                exit(-1);
             key_press_count[i] = ini_getl("data", (std::string("key_press_count_") + std::to_string(i)).c_str(), -1, ini_file);
         }
 
         // [Key overlay]
-        key_style = ini_getl("overlay", "key_style", -1, ini_file);
-        key_color_style = ini_getl("overlay", "key_color_style", -1, ini_file);
-        btn_size_x = ini_getl("overlay", "btn_size_x", -1, ini_file);
-        btn_size_y = ini_getl("overlay", "btn_size_y", -1, ini_file);
-        sbtn_size_x = ini_getl("overlay", "sbtn_size_x", -1, ini_file);
-        sbtn_size_y = ini_getl("overlay", "sbtn_size_y", -1, ini_file);
-        key_dummy_size = ini_getl("overlay", "key_dummy_size", -1, ini_file);
-        key_count_num = ini_getl("overlay", "key_count_num", -1, ini_file);
+        key_style = ini_getl("overlay", "key_style", 1, ini_file);
+        key_color_style = ini_getl("overlay", "key_color_style", 1, ini_file);
+        play_position = ini_getl("overlay", "play_position", 1, ini_file);
+        btn_size_x = ini_getl("overlay", "btn_size_x", 30, ini_file);
+        btn_size_y = ini_getl("overlay", "btn_size_y", 60, ini_file);
+        sbtn_size_x = ini_getl("overlay", "sbtn_size_x", 60, ini_file);
+        sbtn_size_y = ini_getl("overlay", "sbtn_size_y", 70, ini_file);
+        key_dummy_size = ini_getl("overlay", "key_dummy_size", 15, ini_file);
+        key_count_num = ini_getl("overlay", "key_count_num", 1, ini_file);
 
         // [histogram]
-        enabled_histogram = ini_getl("histogram", "enabled_histogram", -1, ini_file);
-        histogram_height = ini_getl("histogram", "histogram_height", -1, ini_file);
-        press_time_scale = ini_getl("histogram", "press_time_scale", -1, ini_file);
-        show_kps_text = ini_getl("histogram", "show_kps_text", -1, ini_file);
-        show_kps_plot = ini_getl("histogram", "show_kps_plot", -1, ini_file);
-        kps_plot_history_time = ini_getl("histogram", "kps_plot_history_time", -1, ini_file);
-        kps_fresh_frame = ini_getl("histogram", "kps_fresh_frame", -1, ini_file);
+        enabled_histogram = ini_getl("histogram", "enabled_histogram", 0, ini_file);
+        histogram_height = ini_getl("histogram", "histogram_height", 130, ini_file);
+        press_time_scale = ini_getl("histogram", "press_time_scale", 2.0f, ini_file);
+
+        // [KPS]
+        show_kps_text = ini_getl("KPS", "show_kps_text", 0, ini_file);
+        show_kps_plot = ini_getl("KPS", "show_kps_plot", 0, ini_file);
+        kps_fresh_frame = ini_getl("KPS", "kps_fresh_frame", 30, ini_file);
+        kps_plot_length = ini_getl("KPS", "kps_plot_length", 80, ini_file);
     }
 }
 
@@ -705,10 +718,12 @@ void SaveConfig(bool init_config)
     ini_putl("histogram", "enabled_histogram", enabled_histogram, ini_file);
     ini_putl("histogram", "histogram_height", histogram_height, ini_file);
     ini_putl("histogram", "press_time_scale", press_time_scale, ini_file);
-    ini_putl("histogram", "show_kps_text", show_kps_text, ini_file);
-    ini_putl("histogram", "show_kps_plot", show_kps_plot, ini_file);
-    ini_putl("histogram", "kps_plot_history_time", kps_plot_history_time, ini_file);
-    ini_putl("histogram", "kps_fresh_frame", kps_fresh_frame, ini_file);
+
+    // [KPS]
+    ini_putl("KPS", "show_kps_text", show_kps_text, ini_file);
+    ini_putl("KPS", "show_kps_plot", show_kps_plot, ini_file);
+    ini_putl("KPS", "kps_fresh_frame", kps_fresh_frame, ini_file);
+    ini_putl("KPS", "kps_plot_length", kps_plot_length, ini_file);
 }
 
 void SetDefaultConfig(bool clear_all)
@@ -741,6 +756,6 @@ void SetDefaultConfig(bool clear_all)
     press_time_scale = 2.0f;
     show_kps_text = false;
     show_kps_plot = false;
-    kps_plot_history_time = 10; // 存几秒的Kps
     kps_fresh_frame = 30;
+    kps_plot_length = 80;
 }
