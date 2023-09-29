@@ -5,6 +5,7 @@
 using namespace ImGui;
 
 static void handle_hook_key_press(WPARAM, DWORD);
+static void KeyUIMaker(ImFont *font_impact);
 static void HelpMarker(const char *desc);
 LRESULT CALLBACK KeyboardProc(int, WPARAM, LPARAM);
 void SetGlobalHook();
@@ -52,10 +53,10 @@ int main(int, char **)
 #endif
     glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
     glfwWindowHint(GLFW_DECORATED, GL_FALSE);
-    // glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GL_TRUE);
+    glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GL_TRUE);
 
     // 创建图形上下文
-    GLFWwindow *window = glfwCreateWindow(1, 1, "Dear ImGui GLFW+OpenGL3 example", nullptr, nullptr);
+    GLFWwindow *window = glfwCreateWindow(1, 1, "Dear ImGui GLFW+OpenGL3", nullptr, nullptr);
     if (window == nullptr)
         return 1;
     glfwMakeContextCurrent(window);
@@ -74,26 +75,8 @@ int main(int, char **)
     io.Fonts->AddFontDefault();
     ImFont *font_impact = io.Fonts->AddFontFromFileTTF("c:/windows/fonts/impact.ttf", 32.0f);
 
-    // 小字体test
-    {
-        // Get the default font's config
-        ImFontConfig config;
-        config.OversampleH = 3;
-        config.OversampleV = 1;
-
-        // Add a smaller version of the default font (scale down to 0.8 times)
-        io.Fonts->AddFontDefault();
-        ImFont *my_small_font = io.Fonts->AddFontDefault(&config);
-        my_small_font->Scale = 0.8f;
-
-        // Build the font atlas
-        unsigned char *pixels;
-        int width, height;
-        io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
-    }
-
     // 风格
-    StyleColorsDark();
+    // StyleColorsDark();
 
     // 平台、渲染器后端
     ImGui_ImplGlfw_InitForOpenGL(window, true);
@@ -115,8 +98,8 @@ int main(int, char **)
 #endif
         // 窗口属性
         const ImGuiViewport *main_viewport = GetMainViewport();
-        SetNextWindowPos(ImVec2(main_viewport->WorkPos.x + 300, main_viewport->WorkPos.y + 100), ImGuiCond_FirstUseEver);
-        SetNextWindowSize(ImVec2(500, -1), ImGuiCond_FirstUseEver);
+        // SetNextWindowPos(ImVec2(main_viewport->WorkPos.x + 300, main_viewport->WorkPos.y + 100), ImGuiCond_FirstUseEver);
+        // SetNextWindowSize(ImVec2(500, -1), ImGuiCond_FirstUseEver);
         // SetNextWindowSizeConstraints(ImVec2(450, -1), ImVec2(450, FLT_MAX));
 
         // style
@@ -131,14 +114,13 @@ int main(int, char **)
 
         // 窗口flag
         ImGuiWindowFlags main_window_flags = 0;
-        // main_window_flags |= ImGuiWindowFlags_NoResize; // 不能调整大小
-        main_window_flags |= ImGuiWindowFlags_NoCollapse; // 不能折叠窗口
+        main_window_flags |= ImGuiWindowFlags_NoResize;
         main_window_flags |= ImGuiWindowFlags_AlwaysAutoResize;
 
         // 主窗口
         {
             // 计算按键按下窗口时间
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < 9; i++)
             {
                 if (is_key_pressed[i])
                     key_pressed_window_time[i] += 1;
@@ -148,7 +130,7 @@ int main(int, char **)
 
             // 计算总数
             count_sum = 0;
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < 9; i++)
                 count_sum += key_press_count[i];
 
             char buf[64];
@@ -157,146 +139,14 @@ int main(int, char **)
             Begin(buf, &main_window_close_flag, main_window_flags);
 
             // 按键图形
-            SeparatorText("Key overlay");
-            Dummy(ImVec2(5, 0));
-            SameLine();
-            BeginGroup();
-            switch (key_style)
+            if (!key_window_mode)
             {
-            case 0: // line style
-                // 1P皿
-                if (!play_position)
-                {
-                    if (is_key_pressed[7] == 1)
-                        PushStyleColor(ImGuiCol_Button, ImVec4(0.9f, 0.0f, 0.0f, 0.9f));
-                    else
-                        PushStyleColor(ImGuiCol_Button, ImVec4(0.7f, 0.0f, 0.0f, 0.3f));
-                    PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.7f, 0.0f, 0.0f, 0.8f));
-                    PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.7f, 0.0f, 0.0f, 0.8f));
-                    Button(key_count_num ? std::to_string(key_press_count[7]).c_str() : "S", ImVec2(sbtn_size_x, sbtn_size_y));
-                    PopStyleColor(3);
-                    SameLine();
-                }
-                for (int i = 0; i < 7; i++)
-                {
-                    bool is_upper_button = i % 2;
-                    PushID(i);
-                    if (key_color_style)
-                    {
-                        // 默认红蓝
-                        if (is_key_pressed[i] == 1)
-                            PushStyleColor(ImGuiCol_Button, ImVec4(0.9f, 0.0f, 0.0f, 0.9f));
-                        else
-                            PushStyleColor(ImGuiCol_Button, ImVec4(is_upper_button ? 0.0f : 0.7f, is_upper_button ? 0.0f : 0.7f, 0.7f, 0.3f));
-                        PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.7f, 0.1f, 0.1f, 0.8f));
-                        PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.7f, 0.1f, 0.1f, 0.8f));
-                        Button(key_count_num ? std::to_string(key_press_count[i]).c_str() : std::to_string(i).c_str(), ImVec2(btn_size_x, btn_size_y));
-                        PopStyleColor(3);
-                    }
-                    else
-                    { // 单色
-                        Button(key_count_num ? std::to_string(key_press_count[i]).c_str() : std::to_string(i).c_str(), ImVec2(btn_size_x, btn_size_y));
-                    }
-                    PopID();
-                    SameLine();
-                }
+                SeparatorText("Key overlay");
+                Dummy(ImVec2(5, 0));
+                SameLine();
 
-                // 2P皿
-                if (play_position)
-                {
-                    if (is_key_pressed[7] == 1)
-                        PushStyleColor(ImGuiCol_Button, ImVec4(0.9f, 0.0f, 0.0f, 0.9f));
-                    else
-                        PushStyleColor(ImGuiCol_Button, ImVec4(0.7f, 0.0f, 0.0f, 0.3f));
-                    PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.7f, 0.0f, 0.0f, 0.8f));
-                    PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.7f, 0.0f, 0.0f, 0.8f));
-                    Button(key_count_num ? std::to_string(key_press_count[7]).c_str() : "S", ImVec2(sbtn_size_x, sbtn_size_y));
-                    PopStyleColor(3);
-                }
-                else
-                {
-                    NewLine();
-                }
-
-                break;
-
-            case 1: // IIDX controller style
-
-                // 1P 皿
-                if (!play_position)
-                {
-                    BeginGroup();
-                    Dummy(ImVec2(1, key_dummy_size - sbtn_size_y));
-                    if (is_key_pressed[7] == 1)
-                        PushStyleColor(ImGuiCol_Button, ImVec4(0.9f, 0.0f, 0.0f, 0.9f));
-                    else
-                        PushStyleColor(ImGuiCol_Button, ImVec4(0.7f, 0.0f, 0.0f, 0.3f));
-                    PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.7f, 0.0f, 0.0f, 0.8f));
-                    PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.7f, 0.0f, 0.0f, 0.8f));
-                    Button(key_count_num ? std::to_string(key_press_count[7]).c_str() : "S", ImVec2(sbtn_size_x, sbtn_size_y));
-                    PopStyleColor(3);
-                    EndGroup();
-                    SameLine();
-                }
-
-                for (int i = 0; i < 7; i++)
-                {
-                    bool is_upper_button = i % 2;
-                    BeginGroup();
-                    PushID(i);
-                    if (!is_upper_button)
-                        Dummy(ImVec2(1, key_dummy_size));
-                    if (key_color_style)
-                    { // 默认红蓝
-                        if (is_key_pressed[i] == 1)
-                            PushStyleColor(ImGuiCol_Button, ImVec4(0.9f, 0.0f, 0.0f, 0.9f));
-                        else
-                            PushStyleColor(ImGuiCol_Button, ImVec4(is_upper_button ? 0.0f : 0.7f, is_upper_button ? 0.0f : 0.7f, 0.7f, 0.3f));
-                        PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.7f, 0.1f, 0.1f, 0.8f));
-                        PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.7f, 0.1f, 0.1f, 0.8f));
-                        Button(key_count_num ? std::to_string(key_press_count[i]).c_str() : std::to_string(i).c_str(), ImVec2(btn_size_x, btn_size_y));
-                        PopStyleColor(3);
-                    }
-                    else
-                    { // 单色
-                        Button(key_count_num ? std::to_string(key_press_count[i]).c_str() : std::to_string(i).c_str(), ImVec2(btn_size_x, btn_size_y));
-                    }
-                    PopID();
-                    EndGroup();
-                    SameLine();
-                }
-
-                // 2P皿
-                if (play_position)
-                {
-                    BeginGroup();
-                    Dummy(ImVec2(1, key_dummy_size - sbtn_size_y));
-                    if (is_key_pressed[7] == 1)
-                        PushStyleColor(ImGuiCol_Button, ImVec4(0.9f, 0.0f, 0.0f, 0.9f));
-                    else
-                        PushStyleColor(ImGuiCol_Button, ImVec4(0.7f, 0.0f, 0.0f, 0.3f));
-                    PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.7f, 0.0f, 0.0f, 0.8f));
-                    PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.7f, 0.0f, 0.0f, 0.8f));
-                    Button(key_count_num ? std::to_string(key_press_count[7]).c_str() : "S", ImVec2(sbtn_size_x, sbtn_size_y));
-                    PopStyleColor(3);
-                    EndGroup();
-                }
-                else
-                {
-                    NewLine();
-                }
-                break;
-            case 2: // flat style
-                break;
+                KeyUIMaker(font_impact);
             }
-            EndGroup();
-
-            NewLine();
-            Dummy(ImVec2(GetContentRegionAvail().x * 0.3f, 0.0f));
-            SameLine();
-            PushFont(font_impact);
-            Text("Total: %d", count_sum);
-            PopFont();
 
             // 柱状图
             if (enabled_histogram)
@@ -314,15 +164,21 @@ int main(int, char **)
                 int max = 0;
                 for (int i = 0; i < 8; i++)
                 {
-                    _histogram_values[i] = (float)key_press_count[i];
-                    if (key_press_count[i] > max)
-                        max = key_press_count[i];
+                    if (i < 7)
+                        _histogram_values[i] = (float)key_press_count[i];
+                    else
+                        _histogram_values[7] = (float)(key_press_count[7] + key_press_count[8]);
+                    if (_histogram_values[i] > max)
+                        max = _histogram_values[i];
                 }
                 PlotHistogram("##values", _histogram_values, 8, 0, NULL, 0.0f, (float)max, ImVec2(200, histogram_height));
                 TableNextColumn();
                 for (int i = 0; i < 8; i++)
                 {
-                    _histogram_values[i] = (float)key_pressed_window_time[i];
+                    if (i < 7)
+                        _histogram_values[i] = (float)key_pressed_window_time[i];
+                    else
+                        _histogram_values[i] = (float)(key_pressed_window_time[i] + key_pressed_window_time[i + 1]);
                 }
 
                 PlotHistogram("##values", _histogram_values, 8, 0, NULL, 0.0f, io.Framerate / press_time_scale, ImVec2(200, histogram_height));
@@ -383,11 +239,11 @@ int main(int, char **)
                 // 清空计数按钮
                 if (Button("clear total", ImVec2(100, 20)))
                 {
-                    for (int i = 0; i < 8; i++)
+                    for (int i = 0; i < 9; i++)
                         key_press_count[i] = 0;
                     SameLine();
-                    HelpMarker("This will clear you all history key press count.");
                 }
+                HelpMarker("This will clear you all history key press count.");
                 SameLine();
 
                 // 默认按钮
@@ -419,6 +275,9 @@ int main(int, char **)
                 // 按键样式
                 if (TreeNode("Button style"))
                 {
+                    Checkbox("separate key overlay", &key_window_mode);
+                    SameLine();
+                    Checkbox("show total press count", &key_show_total);
                     RadioButton("line style", &key_style, 0);
                     SameLine();
                     RadioButton("IIDX style", &key_style, 1);
@@ -458,7 +317,7 @@ int main(int, char **)
                         SliderInt("button dummy size", &key_dummy_size, 0, btn_size_y);
                     }
                     SameLine();
-                    HelpMarker("Set the spaces between those keys.\nJust try.");
+                    HelpMarker("Set the spaces between those keys.\nOnly at IIDX style.");
 
                     btn_size_x = _iidx_button_size[0];
                     btn_size_y = _iidx_button_size[1];
@@ -471,7 +330,7 @@ int main(int, char **)
                 if (TreeNode("Key config"))
                 {
                     BeginTable("key config", 3);
-                    for (int i = 0; i < 8; i++)
+                    for (int i = 0; i < 9; i++)
                     {
                         TableNextRow();
                         TableNextColumn();
@@ -481,7 +340,7 @@ int main(int, char **)
                             Text(vkCodeToKeyName[key_vkcode_config[i]]);
                         Dummy(ImVec2(30, 1));
                         TableNextColumn();
-                        if (Button((i == 7) ? ("scr") : (std::to_string(i + 1).c_str()), ImVec2(70, 20)))
+                        if (Button((i == 7) ? ("scr L") : ((i == 8) ? ("scr R") : (std::to_string(i + 1).c_str())), ImVec2(70, 20)))
                             key_to_bind = i;
                         if (key_to_bind == i)
                         {
@@ -520,13 +379,14 @@ int main(int, char **)
                 PushStyleColor(ImGuiCol_Separator, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
                 SeparatorText("ABOUT THIS TOOL:");
                 PopStyleColor();
-                Text("This prog is a music game tool that visualizes the input of keys,");
-                Text("joysticks, and game controllers.");
-                TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "DEVELOP VERSION! %s", VERSION);
+                Text("A music game input visualization tool.");
+                Text("With in some cool press counting and plots stuff.");
+                Text("Able with keyboard & contoller input.");
+                TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "VERSION %s", VERSION);
                 Text("Features:");
                 BulletText("Real-time display of pressed keys.");
-                BulletText("Count for each key count, total count, realtime and average KPS.");
-                Text("\tDisplay of changes in average KPS.");
+                BulletText("Each key press count, total count, realtime KPS");
+                Text("\tand those plot.");
                 BulletText("Statistics on the proportion of times each key is pressed.");
                 BulletText("Calculate the average hold time for each key press.");
                 Separator();
@@ -537,6 +397,38 @@ int main(int, char **)
 
             NewLine();
             End();
+        }
+
+        // 弹出模式按键UI
+        {
+            if (key_window_mode)
+            {
+                ImGuiWindowFlags s = 0;
+                s |= ImGuiWindowFlags_AlwaysAutoResize;
+                s |= ImGuiWindowFlags_NoDecoration;
+                s |= ImGuiWindowFlags_NoNavInputs;
+                s |= ImGuiWindowFlags_NoResize;
+                s |= ImGuiWindowFlags_NoBackground;
+
+                PushStyleColor(ImGuiCol_WindowBg, ImVec4(0, 0, 0, 0));
+
+                Begin("Key overlay", &key_window_close_flag, s);
+
+                ImGuiStyle &style = GetStyle();
+                style.WindowPadding = ImVec2(14, 2);
+                style.FrameBorderSize = 3;
+                style.FrameRounding = 4;
+                style.GrabRounding = 1;
+                style.SeparatorTextPadding = ImVec2(2, 18);
+                style.WindowBorderSize = 0.0f;            // Remove borders
+                style.WindowRounding = 0.0f;              // Remove rounding
+                style.Colors[ImGuiCol_WindowBg].w = 0.0f; // Make window background transparent
+
+                KeyUIMaker(font_impact);
+
+                End();
+                PopStyleColor();
+            }
         }
 
         // 关闭窗口
@@ -551,7 +443,9 @@ int main(int, char **)
         int display_w, display_h;
         glfwGetFramebufferSize(window, &display_w, &display_h);
         glViewport(0, 0, display_w, display_h);
-        glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
+        // glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // Set clear color to transparent
+
         glClear(GL_COLOR_BUFFER_BIT);
         ImGui_ImplOpenGL3_RenderDrawData(GetDrawData());
         if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
@@ -587,7 +481,7 @@ static void handle_hook_key_press(WPARAM wParam, DWORD vkcode)
         // 没有带绑定按键flag时 处理键盘按下钩子事件
         else
         {
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < 9; i++)
             {
                 // 按下的是被绑定的按键 避免连击
                 if (vkcode == key_vkcode_config[i] && !is_key_pressed[i])
@@ -603,13 +497,155 @@ static void handle_hook_key_press(WPARAM wParam, DWORD vkcode)
     }
     else if (wParam == WM_KEYUP)
     {
-        for (int i = 0; i < 8; i++)
+        for (int i = 0; i < 9; i++)
         {
             if (vkcode == key_vkcode_config[i] && is_key_pressed[i])
             {
                 is_key_pressed[i] = 0;
             }
         }
+    }
+}
+// 生成按键UI
+static void KeyUIMaker(ImFont *font_impact)
+{
+    BeginGroup();
+    switch (key_style)
+    {
+    case 0: // line style
+        // 1P皿
+        if (!play_position)
+        {
+            if (is_key_pressed[7] == 1 || is_key_pressed[8] == 1)
+                PushStyleColor(ImGuiCol_Button, ImVec4(0.9f, 0.0f, 0.0f, 0.9f));
+            else
+                PushStyleColor(ImGuiCol_Button, ImVec4(0.7f, 0.0f, 0.0f, 0.3f));
+            PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.7f, 0.0f, 0.0f, 0.8f));
+            PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.7f, 0.0f, 0.0f, 0.8f));
+            Button(key_count_num ? std::to_string(key_press_count[7] + key_press_count[8]).c_str() : "S", ImVec2(sbtn_size_x, sbtn_size_y));
+            PopStyleColor(3);
+            SameLine();
+        }
+        for (int i = 0; i < 7; i++)
+        {
+            bool is_upper_button = i % 2;
+            PushID(i);
+            if (key_color_style)
+            {
+                // 默认红蓝
+                if (is_key_pressed[i] == 1)
+                    PushStyleColor(ImGuiCol_Button, ImVec4(0.9f, 0.0f, 0.0f, 0.9f));
+                else
+                    PushStyleColor(ImGuiCol_Button, ImVec4(is_upper_button ? 0.0f : 0.7f, is_upper_button ? 0.0f : 0.7f, 0.7f, 0.3f));
+                PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.7f, 0.1f, 0.1f, 0.8f));
+                PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.7f, 0.1f, 0.1f, 0.8f));
+                Button(key_count_num ? std::to_string(key_press_count[i]).c_str() : std::to_string(i).c_str(), ImVec2(btn_size_x, btn_size_y));
+                PopStyleColor(3);
+            }
+            else
+            { // 单色
+                Button(key_count_num ? std::to_string(key_press_count[i]).c_str() : std::to_string(i).c_str(), ImVec2(btn_size_x, btn_size_y));
+            }
+            PopID();
+            SameLine();
+        }
+
+        // 2P皿
+        if (play_position)
+        {
+            if (is_key_pressed[7] == 1 || is_key_pressed[8] == 1)
+                PushStyleColor(ImGuiCol_Button, ImVec4(0.9f, 0.0f, 0.0f, 0.9f));
+            else
+                PushStyleColor(ImGuiCol_Button, ImVec4(0.7f, 0.0f, 0.0f, 0.3f));
+            PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.7f, 0.0f, 0.0f, 0.8f));
+            PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.7f, 0.0f, 0.0f, 0.8f));
+            Button(key_count_num ? std::to_string(key_press_count[7] + key_press_count[8]).c_str() : "S", ImVec2(sbtn_size_x, sbtn_size_y));
+            PopStyleColor(3);
+        }
+        else
+        {
+            NewLine();
+        }
+
+        break;
+
+    case 1: // IIDX controller style
+
+        // 1P 皿
+        if (!play_position)
+        {
+            BeginGroup();
+            Dummy(ImVec2(1, key_dummy_size - sbtn_size_y));
+            if (is_key_pressed[7] == 1 || is_key_pressed[8] == 1)
+                PushStyleColor(ImGuiCol_Button, ImVec4(0.9f, 0.0f, 0.0f, 0.9f));
+            else
+                PushStyleColor(ImGuiCol_Button, ImVec4(0.7f, 0.0f, 0.0f, 0.3f));
+            PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.7f, 0.0f, 0.0f, 0.8f));
+            PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.7f, 0.0f, 0.0f, 0.8f));
+            Button(key_count_num ? std::to_string(key_press_count[7] + key_press_count[8]).c_str() : "S", ImVec2(sbtn_size_x, sbtn_size_y));
+            PopStyleColor(3);
+            EndGroup();
+            SameLine();
+        }
+
+        for (int i = 0; i < 7; i++)
+        {
+            bool is_upper_button = i % 2;
+            BeginGroup();
+            PushID(i);
+            if (!is_upper_button)
+                Dummy(ImVec2(1, key_dummy_size));
+            if (key_color_style)
+            { // 默认红蓝
+                if (is_key_pressed[i] == 1)
+                    PushStyleColor(ImGuiCol_Button, ImVec4(0.9f, 0.0f, 0.0f, 0.9f));
+                else
+                    PushStyleColor(ImGuiCol_Button, ImVec4(is_upper_button ? 0.0f : 0.7f, is_upper_button ? 0.0f : 0.7f, 0.7f, 0.3f));
+                PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.7f, 0.1f, 0.1f, 0.8f));
+                PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.7f, 0.1f, 0.1f, 0.8f));
+                Button(key_count_num ? std::to_string(key_press_count[i]).c_str() : std::to_string(i).c_str(), ImVec2(btn_size_x, btn_size_y));
+                PopStyleColor(3);
+            }
+            else
+            { // 单色
+                Button(key_count_num ? std::to_string(key_press_count[i]).c_str() : std::to_string(i).c_str(), ImVec2(btn_size_x, btn_size_y));
+            }
+            PopID();
+            EndGroup();
+            SameLine();
+        }
+
+        // 2P皿
+        if (play_position)
+        {
+            BeginGroup();
+            Dummy(ImVec2(1, key_dummy_size - sbtn_size_y));
+            if (is_key_pressed[7] == 1 || is_key_pressed[8] == 1)
+                PushStyleColor(ImGuiCol_Button, ImVec4(0.9f, 0.0f, 0.0f, 0.9f));
+            else
+                PushStyleColor(ImGuiCol_Button, ImVec4(0.7f, 0.0f, 0.0f, 0.3f));
+            PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.7f, 0.0f, 0.0f, 0.8f));
+            PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.7f, 0.0f, 0.0f, 0.8f));
+            Button(key_count_num ? std::to_string(key_press_count[7] + key_press_count[8]).c_str() : "S", ImVec2(sbtn_size_x, sbtn_size_y));
+            PopStyleColor(3);
+            EndGroup();
+        }
+        else
+        {
+            NewLine();
+        }
+        break;
+    case 2: // flat style
+        break;
+    }
+    EndGroup();
+    if (key_show_total)
+    {
+        Dummy(ImVec2(GetContentRegionAvail().x * 0.3f, 0.0f));
+        SameLine();
+        PushFont(font_impact);
+        Text("Total: %d", count_sum);
+        PopFont();
     }
 }
 
@@ -660,13 +696,15 @@ void LoadConfig()
     else
     {
         // [data]
-        for (int i = 0; i < 8; i++)
+        for (int i = 0; i < 9; i++)
         {
             key_vkcode_config[i] = ini_getl("data", (std::string("key_vkcode_config_") + std::to_string(i)).c_str(), -1, ini_file);
             key_press_count[i] = ini_getl("data", (std::string("key_press_count_") + std::to_string(i)).c_str(), -1, ini_file);
         }
 
         // [Key overlay]
+        key_window_mode = ini_getl("overlay", "key_window_mode", 1, ini_file);
+        key_show_total = ini_getl("overlay", "key_show_total", 1, ini_file);
         key_style = ini_getl("overlay", "key_style", 1, ini_file);
         key_color_style = ini_getl("overlay", "key_color_style", 1, ini_file);
         play_position = ini_getl("overlay", "play_position", 1, ini_file);
@@ -697,13 +735,15 @@ void SaveConfig(bool init_config)
         SetDefaultConfig(1);
 
     // [data]
-    for (int i = 0; i < 8; i++)
+    for (int i = 0; i < 9; i++)
     {
         ini_putl("data", (std::string("key_vkcode_config_") + std::to_string(i)).c_str(), key_vkcode_config[i], ini_file);
         ini_putl("data", (std::string("key_press_count_") + std::to_string(i)).c_str(), key_press_count[i], ini_file);
     }
 
     // [Key overlay]
+    ini_putl("overlay", "key_window_mode", key_window_mode, ini_file);
+    ini_putl("overlay", "key_show_total", key_show_total, ini_file);
     ini_putl("overlay", "key_style", key_style, ini_file);
     ini_putl("overlay", "key_color_style", key_color_style, ini_file);
     ini_putl("overlay", "play_position", play_position, ini_file);
@@ -732,7 +772,7 @@ void SetDefaultConfig(bool clear_all)
     if (clear_all)
     {
         // 清除键位
-        for (int i = 0; i < 8; i++)
+        for (int i = 0; i < 9; i++)
         {
             key_vkcode_config[i] = 0;
             key_press_count[i] = 0;
@@ -740,6 +780,8 @@ void SetDefaultConfig(bool clear_all)
     }
 
     // [Key overlay]
+    key_window_mode = 0;
+    key_show_total = 1;
     key_style = 1;
     key_color_style = 1;
     play_position = 0;

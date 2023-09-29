@@ -1,6 +1,6 @@
 #pragma once
 
-#define VERSION "v0.5.1"
+#define VERSION "v1.0"
 
 #include <map>
 #include <windows.h>
@@ -173,11 +173,12 @@ std::map<int, const char *> vkCodeToKeyName = {
 
 // config
 // [data]
-// static int key_count[8] = {0, 0, 0, 0, 0, 0, 0, 0}; // 1~7号键按键 皿 计数
-static int key_vkcode_config[8] = {83, 68, 70, 32, 74, 75, 76, 77};
-static int key_press_count[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+static int key_vkcode_config[9] = {83, 68, 70, 32, 74, 75, 76, 77, 78};
+static int key_press_count[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 // [Key overlay]
+static bool key_window_mode = 0;
+static bool key_show_total = 1;
 static int key_style = 1;        // 显示按键布局 0一条线 1iidx默认布局 2平铺
 static bool key_color_style = 1; // 显示按键颜色 0单色 1默认红蓝
 static int play_position = 0;    // iidx游玩位置 0 1p 1 2p
@@ -204,10 +205,11 @@ const char *ini_file = "./config.ini";
 static float f = 0.0f;
 static int counter = 0; // fps计算
 bool main_window_close_flag = true;
+bool key_window_close_flag = false;
 ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 0.00f);
 static float _histogram_values[8] = {};
-static bool is_key_pressed[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-static int key_pressed_window_time[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+static bool is_key_pressed[9] = {0, 0, 0, 0, 0, 0, 0, 0,0};
+static int key_pressed_window_time[9] = {0, 0, 0, 0, 0, 0, 0, 0,0};
 static HHOOK hHook = NULL;
 static int key_to_bind = -1; // 待绑定按键编号 -1为无
 static int _frame_count = 0;
