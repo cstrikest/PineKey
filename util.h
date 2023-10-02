@@ -1,7 +1,7 @@
 #pragma once
 #pragma comment(lib, "xinput.lib")
 
-#define VERSION "v1.0"
+#define VERSION "v1.0.1"
 
 #include <map>
 #include <windows.h>
