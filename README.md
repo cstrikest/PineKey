@@ -1,4 +1,4 @@
-# PineKey BMS/IIDX 输入可视化 推流插件
+# PineKey BMS/IIDX 按键输入可视化
 
 音乐游戏按键输入辅助显示
 
@@ -7,6 +7,18 @@
 支持键盘，手柄，游戏控制器（手台）等输入。
 
 ![PineKey_v1.0.1](https://github.com/cstrikest/PineKey/blob/main/PineKey_v1.0.1.jpg?raw=true)
+
+===
+
+TODO:
+- 1p 2p切换时，直方图对应数据顺序也切换
+- 手柄，游戏控制器的输入（数字与模拟两者都要支持）
+- 更好的KPS计算方法
+- config布局重构，可以放在一个单独的滚动区域内
+- 按键overlay独立窗口显示，并且可选背景透明度
+- 更多的按键映射位置
+
+
 ### v1.0.1
 
 - XInput 手柄支持
