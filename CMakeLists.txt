@@ -4,11 +4,12 @@ cmake_minimum_required(VERSION 3.10)
 
 project(PineKey)
 
-
 set(GLFW_LIBRARY ${CMAKE_CURRENT_SOURCE_DIR}/lib/glfw3.dll)
 
 # imgui paths
 set(IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/imgui-docking)
+
+set(XINPUT ${CMAKE_CURRENT_SOURCE_DIR}/bin/XInput.bin ${CMAKE_CURRENT_SOURCE_DIR}/bin/Xinput9_1_0.bin)
 
 # imgui source files
 set(IMGUI_SOURCES 
@@ -29,7 +30,7 @@ add_executable(${PROJECT_NAME} main.cpp ${CMAKE_CURRENT_SOURCE_DIR}/minini_13/mi
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/ ${IMGUI_DIR} ${IMGUI_DIR}/backends)
     
-target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARY} ${GLFW_LIBRARY} opengl32.lib gdi32.lib shell32.lib)
+target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARY} ${GLFW_LIBRARY} XINPUT opengl32.lib gdi32.lib shell32.lib)
 
 set_target_properties(PineKey PROPERTIES WIN32_EXECUTABLE TRUE)
 

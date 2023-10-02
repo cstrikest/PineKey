@@ -1,4 +1,5 @@
 #pragma once
+#pragma comment(lib, "xinput.lib")
 
 #define VERSION "v1.0"
 
@@ -7,12 +8,14 @@
 #include <WinUser.h>
 #include <stdio.h>
 #include <iostream>
-
 #include "minini_13/minIni.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include <GLFW/glfw3.h>
+#include <MMSystem.h>
+#include <xinput.h>
+#include <cstring>
 
 #define GL_SILENCE_DEPRECATION
 

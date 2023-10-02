@@ -14,6 +14,9 @@ void LoadConfig();
 void SaveConfig(bool);
 void SetDefaultConfig(bool);
 
+DWORD dwResult;
+XINPUT_STATE state;
+
 static void glfw_error_callback(int error, const char *description)
 {
     fprintf(stderr, "GLFW Error %d: %s\n", error, description);
@@ -21,6 +24,30 @@ static void glfw_error_callback(int error, const char *description)
 
 int main(int, char **)
 {
+std::memset(&state, 0, sizeof(XINPUT_STATE));
+
+// 循环检测控制器输入
+// while (1)
+// {
+//     // 获取控制器状态
+//     dwResult = XInputGetState(0, &state);
+
+//     if (dwResult == ERROR_SUCCESS)
+//     {
+//         // 检测按键（例如：A按钮）
+//         if (state.Gamepad.wButtons & XINPUT_GAMEPAD_A)
+//         {
+//             // 如果A按钮被按下，则调用onMyPressDown()
+//             MessageBox(NULL,"111", "2",MB_OK)
+//         }
+//     }
+//     else
+//     {
+//         std::cout << "Controller not connected" << std::endl;
+//     }
+// }
+// 为了示例，我们在此处添加延迟。您可能需要根据需要调整此处的逻辑
+
     SetGlobalHook();
 
     LoadConfig();
@@ -60,7 +87,7 @@ int main(int, char **)
     if (window == nullptr)
         return 1;
     glfwMakeContextCurrent(window);
-    glfwSwapInterval(1); // 垂直同步
+    glfwSwapInterval(0); // 垂直同步
 
     // ImGui上下文
     IMGUI_CHECKVERSION();
@@ -74,9 +101,6 @@ int main(int, char **)
     // 字体
     io.Fonts->AddFontDefault();
     ImFont *font_impact = io.Fonts->AddFontFromFileTTF("c:/windows/fonts/impact.ttf", 32.0f);
-
-    // 风格
-    // StyleColorsDark();
 
     // 平台、渲染器后端
     ImGui_ImplGlfw_InitForOpenGL(window, true);
@@ -144,7 +168,6 @@ int main(int, char **)
                 SeparatorText("Key overlay");
                 Dummy(ImVec2(5, 0));
                 SameLine();
-
                 KeyUIMaker(font_impact);
             }
 
@@ -152,7 +175,6 @@ int main(int, char **)
             if (enabled_histogram)
             {
                 SeparatorText("Key count histogram");
-
                 BeginTable("histogram", 2);
                 TableNextRow();
                 TableNextColumn();
@@ -180,9 +202,7 @@ int main(int, char **)
                     else
                         _histogram_values[i] = (float)(key_pressed_window_time[i] + key_pressed_window_time[i + 1]);
                 }
-
                 PlotHistogram("##values", _histogram_values, 8, 0, NULL, 0.0f, io.Framerate / press_time_scale, ImVec2(200, histogram_height));
-
                 EndTable();
             }
 
@@ -202,12 +222,10 @@ int main(int, char **)
                         kpsHistory[i] = kpsHistory[i - 1];
                     kpsHistory[0] = kps;
                 }
-
                 if (show_kps_plot)
                 {
                     PlotLines("", kpsHistory, kps_plot_length, 0, NULL, 0.0f, 48.0f, ImVec2(GetContentRegionAvail().x, 80));
                 }
-
                 if (show_kps_text)
                 {
                     Dummy(ImVec2(GetContentRegionAvail().x * 0.35f, 0.0f));
@@ -241,8 +259,8 @@ int main(int, char **)
                 {
                     for (int i = 0; i < 9; i++)
                         key_press_count[i] = 0;
-                    SameLine();
                 }
+                SameLine();
                 HelpMarker("This will clear you all history key press count.");
                 SameLine();
 
@@ -255,7 +273,7 @@ int main(int, char **)
                 // 柱状图
                 Checkbox("histogram", &enabled_histogram);
                 SameLine();
-                HelpMarker("Enable 2 histogram\n\t- each key's press count\n\t-each key's pressed time");
+                HelpMarker("Enable 2 histogram\n\t- each key's press count\n\t- each key's pressed time");
                 SameLine();
 
                 // 柱状图高度调整
@@ -287,11 +305,9 @@ int main(int, char **)
                     EndDisabled();
                     SameLine();
                     HelpMarker("Not supported yet.");
-
                     RadioButton("1P", &play_position, 0);
                     SameLine();
                     RadioButton("2P", &play_position, 1);
-
                     Checkbox("color button", &key_color_style);
                     SameLine();
                     Checkbox("show count number on keys", &key_count_num);
@@ -316,9 +332,9 @@ int main(int, char **)
                     {
                         SliderInt("button dummy size", &key_dummy_size, 0, btn_size_y);
                     }
+
                     SameLine();
                     HelpMarker("Set the spaces between those keys.\nOnly at IIDX style.");
-
                     btn_size_x = _iidx_button_size[0];
                     btn_size_y = _iidx_button_size[1];
                     sbtn_size_x = _iidx_scr_button_size[0];
@@ -349,7 +365,6 @@ int main(int, char **)
                         }
                     }
                     EndTable();
-
                     NewLine();
                     TreePop();
                 }
@@ -363,7 +378,7 @@ int main(int, char **)
                     SameLine();
                     HelpMarker("Enable a plot shows that your kps's changing.");
                     SetNextItemWidth(200);
-                    SliderInt("kps refresh frame", &kps_fresh_frame, 15, 60);
+                    SliderInt("kps refresh frame", &kps_fresh_frame, 20, 280);
                     SameLine();
                     HelpMarker("Lower value brings faster kps fresh rate but bad accuracy.\nHigher fps monitor could help.");
                     SetNextItemWidth(200);
@@ -409,7 +424,6 @@ int main(int, char **)
                 s |= ImGuiWindowFlags_NoNavInputs;
                 s |= ImGuiWindowFlags_NoResize;
                 s |= ImGuiWindowFlags_NoBackground;
-
                 PushStyleColor(ImGuiCol_WindowBg, ImVec4(0, 0, 0, 0));
 
                 Begin("Key overlay", &key_window_close_flag, s);
@@ -443,7 +457,6 @@ int main(int, char **)
         int display_w, display_h;
         glfwGetFramebufferSize(window, &display_w, &display_h);
         glViewport(0, 0, display_w, display_h);
-        // glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // Set clear color to transparent
 
         glClear(GL_COLOR_BUFFER_BIT);
