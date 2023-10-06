@@ -1,7 +1,7 @@
 #pragma once
 #pragma comment(lib, "xinput.lib")
 
-#define VERSION "v1.0.1"
+#define VERSION "v1.0.2"
 
 #include <map>
 #include <windows.h>
@@ -195,7 +195,7 @@ static bool key_count_num = true;
 // [histogram]
 static bool enabled_histogram = false;
 static int histogram_height = 130;
-static float press_time_scale = 2.0f;
+static int press_time_scale = 200;
 
 // [KPS]
 static bool show_kps_text = false;

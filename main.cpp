@@ -24,29 +24,29 @@ static void glfw_error_callback(int error, const char *description)
 
 int main(int, char **)
 {
-std::memset(&state, 0, sizeof(XINPUT_STATE));
+    std::memset(&state, 0, sizeof(XINPUT_STATE));
 
-// 循环检测控制器输入
-// while (1)
-// {
-//     // 获取控制器状态
-//     dwResult = XInputGetState(0, &state);
+    // 循环检测控制器输入
+    // while (1)
+    // {
+    //     // 获取控制器状态
+    //     dwResult = XInputGetState(0, &state);
 
-//     if (dwResult == ERROR_SUCCESS)
-//     {
-//         // 检测按键（例如：A按钮）
-//         if (state.Gamepad.wButtons & XINPUT_GAMEPAD_A)
-//         {
-//             // 如果A按钮被按下，则调用onMyPressDown()
-//             MessageBox(NULL,"111", "2",MB_OK)
-//         }
-//     }
-//     else
-//     {
-//         std::cout << "Controller not connected" << std::endl;
-//     }
-// }
-// 为了示例，我们在此处添加延迟。您可能需要根据需要调整此处的逻辑
+    //     if (dwResult == ERROR_SUCCESS)
+    //     {
+    //         // 检测按键（例如：A按钮）
+    //         if (state.Gamepad.wButtons & XINPUT_GAMEPAD_A)
+    //         {
+    //             // 如果A按钮被按下，则调用onMyPressDown()
+    //             MessageBox(NULL,"111", "2",MB_OK)
+    //         }
+    //     }
+    //     else
+    //     {
+    //         std::cout << "Controller not connected" << std::endl;
+    //     }
+    // }
+    // 为了示例，我们在此处添加延迟。您可能需要根据需要调整此处的逻辑
 
     SetGlobalHook();
 
@@ -63,6 +63,7 @@ std::memset(&state, 0, sizeof(XINPUT_STATE));
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
     glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
+
 #elif defined(__APPLE__)
     // GL 3.2 + GLSL 150
     const char *glsl_version = "#version 150";
@@ -87,7 +88,7 @@ std::memset(&state, 0, sizeof(XINPUT_STATE));
     if (window == nullptr)
         return 1;
     glfwMakeContextCurrent(window);
-    glfwSwapInterval(0); // 垂直同步
+    glfwSwapInterval(1); // 垂直同步
 
     // ImGui上下文
     IMGUI_CHECKVERSION();
@@ -183,26 +184,47 @@ std::memset(&state, 0, sizeof(XINPUT_STATE));
                 Text("key press window graph");
                 TableNextRow();
                 TableNextColumn();
+                int index = 0;
+                int temp = 0;
                 int max = 0;
-                for (int i = 0; i < 8; i++)
+                if (play_position) // 判断皿在[0]还是[7]
                 {
-                    if (i < 7)
-                        _histogram_values[i] = (float)key_press_count[i];
-                    else
-                        _histogram_values[7] = (float)(key_press_count[7] + key_press_count[8]);
+                    _histogram_values[7] = (float)(key_press_count[7] + key_press_count[8]);
+                    max = _histogram_values[7];
+                }
+                else
+                {
+                    _histogram_values[0] = (float)(key_press_count[7] + key_press_count[8]);
+                    index = 1;
+                    max = _histogram_values[0];
+                }
+                for (int i = index; i < index + 7; i++)
+                {
+                    _histogram_values[i] = (float)key_press_count[temp];
                     if (_histogram_values[i] > max)
                         max = _histogram_values[i];
+                    temp++;
                 }
+
                 PlotHistogram("##values", _histogram_values, 8, 0, NULL, 0.0f, (float)max, ImVec2(200, histogram_height));
                 TableNextColumn();
-                for (int i = 0; i < 8; i++)
+                if (play_position)
                 {
-                    if (i < 7)
-                        _histogram_values[i] = (float)key_pressed_window_time[i];
-                    else
-                        _histogram_values[i] = (float)(key_pressed_window_time[i] + key_pressed_window_time[i + 1]);
+                    index = 0;
+                    _histogram_values[7] = (float)(key_pressed_window_time[7] + key_pressed_window_time[8]);
                 }
-                PlotHistogram("##values", _histogram_values, 8, 0, NULL, 0.0f, io.Framerate / press_time_scale, ImVec2(200, histogram_height));
+                else
+                {
+                    index = 1;
+                    _histogram_values[0] = (float)(key_pressed_window_time[7] + key_pressed_window_time[8]);
+                }
+                temp = 0;
+                for (int i = index; i < index + 7; i++)
+                {
+                    _histogram_values[i] = (float)key_pressed_window_time[temp];
+                    temp++;
+                }
+                PlotHistogram("##values", _histogram_values, 8, 0, NULL, 0.0f, io.Framerate / press_time_scale * 50, ImVec2(200, histogram_height));
                 EndTable();
             }
 
@@ -285,10 +307,12 @@ std::memset(&state, 0, sizeof(XINPUT_STATE));
                     EndDisabled();
 
                 // 按键按下窗口柱状图上限倍率
-                SliderFloat("key press time scale", &press_time_scale, 0.1f, 16.0f);
+                SliderInt("key press time scale", &press_time_scale, 40, 1250);
+                SameLine();
+                HelpMarker("Set the max value of press time graph could show.\ne.g. 150ms 4frames means it tooks 150ms and 4frames to let the yellow bar reach the top.");
                 Text("");
-                SameLine(GetContentRegionAvail().x - 100);
-                Text("max in %.0f ms", 1000.0f / press_time_scale);
+                SameLine(GetContentRegionAvail().x - 200);
+                Text("max at %.0f ms, %.0f frames", io.Framerate / press_time_scale * 50 * (1000 / io.Framerate), io.Framerate / press_time_scale * 50);
 
                 // 按键样式
                 if (TreeNode("Button style"))
@@ -731,7 +755,7 @@ void LoadConfig()
         // [histogram]
         enabled_histogram = ini_getl("histogram", "enabled_histogram", 0, ini_file);
         histogram_height = ini_getl("histogram", "histogram_height", 130, ini_file);
-        press_time_scale = ini_getl("histogram", "press_time_scale", 2.0f, ini_file);
+        press_time_scale = ini_getl("histogram", "press_time_scale", 200, ini_file);
 
         // [KPS]
         show_kps_text = ini_getl("KPS", "show_kps_text", 0, ini_file);
@@ -808,7 +832,7 @@ void SetDefaultConfig(bool clear_all)
     // [histogram]
     enabled_histogram = false;
     histogram_height = 130;
-    press_time_scale = 2.0f;
+    press_time_scale = 200;
     show_kps_text = false;
     show_kps_plot = false;
     kps_fresh_frame = 30;
