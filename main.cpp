@@ -16,19 +16,18 @@ void SetDefaultConfig(bool);
 
 int main(int, char **)
 {
-
     SetGlobalHook();
-
     LoadConfig();
 
+    SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS, "1");
+    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
+
+    // 初始化手柄
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER | SDL_INIT_JOYSTICK) != 0)
     {
         printf("Error: %s\n", SDL_GetError());
         return -1;
     }
-    SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS, "1");
-    if (!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1"))
-        msg = std::string("Linear texture filtering not enabled.");
     if (SDL_NumJoysticks() < 1)
         msg = std::string("No controller connected.\nPlug your controller and restart this application.");
     else

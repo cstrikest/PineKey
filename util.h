@@ -1,6 +1,6 @@
 #pragma once
 #define SDL_MAIN_HANDLED
-#define VERSION "v1.0.2"
+#define VERSION "v1.1.5pre"
 
 #include <map>
 #include <windows.h>
