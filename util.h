@@ -1,6 +1,5 @@
 #pragma once
-#pragma comment(lib, "xinput.lib")
-
+#define SDL_MAIN_HANDLED
 #define VERSION "v1.0.2"
 
 #include <map>
@@ -8,23 +7,16 @@
 #include <WinUser.h>
 #include <stdio.h>
 #include <iostream>
-#include "minini_13/minIni.h"
+#include "minini_13/minIni.h" 
 #include "imgui.h"
-#include "imgui_impl_glfw.h"
+#include "imgui_impl_sdl2.h"
 #include "imgui_impl_opengl3.h"
-#include <GLFW/glfw3.h>
-#include <MMSystem.h>
-#include <xinput.h>
-#include <cstring>
-
-#define GL_SILENCE_DEPRECATION
-
+#include <stdio.h>
+#include <SDL.h>
 #if defined(IMGUI_IMPL_OPENGL_ES2)
-#include <GLES2/gl2.h>
-#endif
-
-#if defined(_MSC_VER) && (_MSC_VER >= 1900) && !defined(IMGUI_DISABLE_WIN32_FUNCTIONS)
-#pragma comment(lib, "legacy_stdio_definitions")
+#include <SDL_opengles2.h>
+#else
+#include <SDL_opengl.h>
 #endif
 
 std::map<int, const char *> vkCodeToKeyName = {
@@ -220,5 +212,10 @@ static int _count = 0;
 static float kps = 0;
 static int currentIdx = 0;
 static int count_sum = 0;
-
+static std::string msg;
 float kpsHistory[500] = {0};
+
+SDL_Joystick* gGameController = NULL;
+static int xDir = 0;
+static int yDir = 0;
+static int ntn=  0;

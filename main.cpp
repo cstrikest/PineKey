@@ -14,81 +14,72 @@ void LoadConfig();
 void SaveConfig(bool);
 void SetDefaultConfig(bool);
 
-DWORD dwResult;
-XINPUT_STATE state;
-
-static void glfw_error_callback(int error, const char *description)
-{
-    fprintf(stderr, "GLFW Error %d: %s\n", error, description);
-}
-
 int main(int, char **)
 {
-    std::memset(&state, 0, sizeof(XINPUT_STATE));
-
-    // 循环检测控制器输入
-    // while (1)
-    // {
-    //     // 获取控制器状态
-    //     dwResult = XInputGetState(0, &state);
-
-    //     if (dwResult == ERROR_SUCCESS)
-    //     {
-    //         // 检测按键（例如：A按钮）
-    //         if (state.Gamepad.wButtons & XINPUT_GAMEPAD_A)
-    //         {
-    //             // 如果A按钮被按下，则调用onMyPressDown()
-    //             MessageBox(NULL,"111", "2",MB_OK)
-    //         }
-    //     }
-    //     else
-    //     {
-    //         std::cout << "Controller not connected" << std::endl;
-    //     }
-    // }
-    // 为了示例，我们在此处添加延迟。您可能需要根据需要调整此处的逻辑
 
     SetGlobalHook();
 
     LoadConfig();
 
-    glfwSetErrorCallback(glfw_error_callback);
-    if (!glfwInit())
-        return 1;
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER | SDL_INIT_JOYSTICK) != 0)
+    {
+        printf("Error: %s\n", SDL_GetError());
+        return -1;
+    }
+    SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS, "1");
+    if (!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1"))
+        msg = std::string("Linear texture filtering not enabled.");
+    if (SDL_NumJoysticks() < 1)
+        msg = std::string("No controller connected.\nPlug your controller and restart this application.");
+    else
+    {
+        gGameController = SDL_JoystickOpen(0);
+        if (gGameController == NULL)
+            msg = std::string("Unable to open controller.");
+    }
 
-        // Decide GL+GLSL versions
+    // Decide GL+GLSL versions
 #if defined(IMGUI_IMPL_OPENGL_ES2)
     // GL ES 2.0 + GLSL 100
     const char *glsl_version = "#version 100";
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
-
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 #elif defined(__APPLE__)
-    // GL 3.2 + GLSL 150
+    // GL 3.2 Core + GLSL 150
     const char *glsl_version = "#version 150";
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // 3.2+ only
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);           // Required on Mac
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG); // Always required on Mac
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
 #else
     // GL 3.0 + GLSL 130
     const char *glsl_version = "#version 130";
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-    // glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
-    // glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // 3.0+ only
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 #endif
-    glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
-    glfwWindowHint(GLFW_DECORATED, GL_FALSE);
-    glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GL_TRUE);
+
+    // From 2.0.18: Enable native IME.
+#ifdef SDL_HINT_IME_SHOW_UI
+    SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
+#endif
 
     // 创建图形上下文
-    GLFWwindow *window = glfwCreateWindow(1, 1, "Dear ImGui GLFW+OpenGL3", nullptr, nullptr);
-    if (window == nullptr)
-        return 1;
-    glfwMakeContextCurrent(window);
-    glfwSwapInterval(1); // 垂直同步
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+    SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL |
+                                                     SDL_WINDOW_RESIZABLE |
+                                                     SDL_WINDOW_ALLOW_HIGHDPI |
+                                                     SDL_WINDOW_BORDERLESS |
+                                                     SDL_WINDOW_HIDDEN);
+    SDL_Window *window = SDL_CreateWindow("Dear ImGui SDL2+OpenGL3 example", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 0, 0, window_flags);
+    SDL_GLContext gl_context = SDL_GL_CreateContext(window);
+    SDL_GL_MakeCurrent(window, gl_context);
+    SDL_GL_SetSwapInterval(1); // 垂直同步
 
     // ImGui上下文
     IMGUI_CHECKVERSION();
@@ -104,19 +95,56 @@ int main(int, char **)
     ImFont *font_impact = io.Fonts->AddFontFromFileTTF("c:/windows/fonts/impact.ttf", 32.0f);
 
     // 平台、渲染器后端
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplSDL2_InitForOpenGL(window, gl_context);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
     // 主循环
-    while (!glfwWindowShouldClose(window))
+    bool done = false;
+    while (!done)
     {
         // 抓取事件处理
-        glfwPollEvents();
+        SDL_Event event;
+        while (SDL_PollEvent(&event))
+        {
+            ImGui_ImplSDL2_ProcessEvent(&event);
+            if (event.type == SDL_QUIT)
+                done = true;
+            else if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE && event.window.windowID == SDL_GetWindowID(window))
+                done = true;
+            else if (event.type == SDL_JOYAXISMOTION)
+            {
+                if (event.jaxis.which == 0)
+                {
+                    if (event.jaxis.axis == 0)
+                    {
+                        if (event.jaxis.value < -4000)
+                            xDir = 1;
+                        else if (event.jaxis.value > 4000)
+                            xDir = -1;
+                        else
+                            xDir = 0;
+                    }
+                    if (event.jaxis.axis == 1)
+                    {
+                        if (event.jaxis.value < -4000)
+                            yDir = 1;
+                        else if (event.jaxis.value > 4000)
+                            yDir = -1;
+                        else
+                            yDir = 0;
+                    }
+                }
+            }
+            else if (event.type == SDL_JOYBUTTONDOWN)
+            {
+                ntn = event.jbutton.button;
+            }
+        }
 
         // 新帧
         ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        NewFrame();
+        ImGui_ImplSDL2_NewFrame();
+        ImGui::NewFrame();
 
 #ifdef DEBUG
         ShowDemoWindow(nullptr);
@@ -261,6 +289,9 @@ int main(int, char **)
             NewLine();
             Separator();
             Separator();
+            Text("%s == %d", msg.c_str(), ntn);
+            SliderInt("v1", &xDir, -1, 1);
+            SliderInt("v2", &yDir, -1, 1);
             Separator();
             Separator();
             Separator();
@@ -477,29 +508,41 @@ int main(int, char **)
         }
 
         // 渲染
-        Render();
-        int display_w, display_h;
-        glfwGetFramebufferSize(window, &display_w, &display_h);
-        glViewport(0, 0, display_w, display_h);
-        glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // Set clear color to transparent
-
+        ImGui::Render();
+        glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
+        glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
         glClear(GL_COLOR_BUFFER_BIT);
-        ImGui_ImplOpenGL3_RenderDrawData(GetDrawData());
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+        // Update and Render additional Platform Windows
+        // (Platform functions may change the current OpenGL context, so we save/restore it to make it easier to paste this code elsewhere.
+        //  For this specific demo app we could also call SDL_GL_MakeCurrent(window, gl_context) directly)
         if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
         {
-            UpdatePlatformWindows();
-            RenderPlatformWindowsDefault();
+            SDL_Window *backup_current_window = SDL_GL_GetCurrentWindow();
+            SDL_GLContext backup_current_context = SDL_GL_GetCurrentContext();
+            ImGui::UpdatePlatformWindows();
+            ImGui::RenderPlatformWindowsDefault();
+            SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
         }
-        glfwSwapBuffers(window);
+        SDL_GL_SwapWindow(window);
+
+        // glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // Set clear color to transparent
     }
 
     // 清理
+
+    SDL_JoystickClose(gGameController);
+    gGameController = NULL;
+
     ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    DestroyContext();
-    glfwDestroyWindow(window);
-    glfwTerminate();
-    RemoveGlobalHook();
+    ImGui_ImplSDL2_Shutdown();
+    ImGui::DestroyContext();
+
+    SDL_GL_DeleteContext(gl_context);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
+
     return 0;
 }
 
