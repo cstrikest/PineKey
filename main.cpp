@@ -1,4 +1,4 @@
-// #define DEBUG
+#define DEBUG
 
 #include "util.h"
 
@@ -13,29 +13,22 @@ void RemoveGlobalHook();
 void LoadConfig();
 void SaveConfig(bool);
 void SetDefaultConfig(bool);
+void InitController();
 
 int main(int, char **)
 {
-    SetGlobalHook();
     LoadConfig();
 
-    SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS, "1");
-    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
-
-    // 初始化手柄
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER | SDL_INIT_JOYSTICK) != 0)
     {
         printf("Error: %s\n", SDL_GetError());
         return -1;
     }
-    if (SDL_NumJoysticks() < 1)
-        msg = std::string("No controller connected.\nPlug your controller and restart this application.");
-    else
-    {
-        gGameController = SDL_JoystickOpen(0);
-        if (gGameController == NULL)
-            msg = std::string("Unable to open controller.");
-    }
+
+    SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS, "1");
+    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
+
+    InitController();
 
     // Decide GL+GLSL versions
 #if defined(IMGUI_IMPL_OPENGL_ES2)
@@ -99,8 +92,19 @@ int main(int, char **)
 
     // 主循环
     bool done = false;
+    bool switch_input = true;
     while (!done)
     {
+        // 未设置输入时设置输入
+        if (switch_input)
+        {
+            if (!input_mode) // 键盘
+                SetGlobalHook();
+            else // 手台
+                InitController();
+            switch_input = false;
+        }
+
         // 抓取事件处理
         SDL_Event event;
         while (SDL_PollEvent(&event))
@@ -299,6 +303,10 @@ int main(int, char **)
             // 底部下拉菜单
             if (CollapsingHeader("Config"))
             {
+                PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f);
+                PushStyleVar(ImGuiStyleVar_ChildBorderSize, 3.0f);
+                BeginChild("config", ImVec2(0, 150), true, 0);
+                Spacing();
                 // 保存按钮
                 if (Button("Save config", ImVec2(100, 20)))
                 {
@@ -322,28 +330,37 @@ int main(int, char **)
                     SetDefaultConfig(0);
                 }
 
+                // 输入选择
+                Text("input method: ");
+                SameLine();
+                RadioButton("keyboard", &input_mode, 0);
+                SameLine();
+                RadioButton("controller", &input_mode, 1);
+
                 // 柱状图
-                Checkbox("histogram", &enabled_histogram);
-                SameLine();
-                HelpMarker("Enable 2 histogram\n\t- each key's press count\n\t- each key's pressed time");
-                SameLine();
+                if (TreeNode("Histogram"))
+                {
+                    Checkbox("histogram", &enabled_histogram);
+                    SameLine();
+                    HelpMarker("Enable 2 histogram\n\t- each key's press count\n\t- each key's pressed time");
+                    SameLine();
 
-                // 柱状图高度调整
-                SetNextItemWidth(120);
-                if (!enabled_histogram)
-                    BeginDisabled();
-                SliderInt("histogram height", &histogram_height, 32, 512);
-                if (!enabled_histogram)
-                    EndDisabled();
+                    // 柱状图高度调整
+                    SetNextItemWidth(120);
+                    if (!enabled_histogram)
+                        BeginDisabled();
+                    SliderInt("histogram height", &histogram_height, 32, 512);
+                    if (!enabled_histogram)
+                        EndDisabled();
 
-                // 按键按下窗口柱状图上限倍率
-                SliderInt("key press time scale", &press_time_scale, 40, 1250);
-                SameLine();
-                HelpMarker("Set the max value of press time graph could show.\ne.g. 150ms 4frames means it tooks 150ms and 4frames to let the yellow bar reach the top.");
-                Text("");
-                SameLine(GetContentRegionAvail().x - 200);
-                Text("max at %.0f ms, %.0f frames", io.Framerate / press_time_scale * 50 * (1000 / io.Framerate), io.Framerate / press_time_scale * 50);
-
+                    // 按键按下窗口柱状图上限倍率
+                    SliderInt("key press time scale", &press_time_scale, 40, 1250);
+                    SameLine();
+                    HelpMarker("Set the max value of press time graph could show.\ne.g. 150ms 4frames means it tooks 150ms and 4frames to let the yellow bar reach the top.");
+                    Text("");
+                    SameLine(GetContentRegionAvail().x - 200);
+                    Text("max at %.0f ms, %.0f frames", io.Framerate / press_time_scale * 50 * (1000 / io.Framerate), io.Framerate / press_time_scale * 50);
+                }
                 // 按键样式
                 if (TreeNode("Button style"))
                 {
@@ -441,6 +458,9 @@ int main(int, char **)
                     HelpMarker("Set how many kps sample point show in plot.");
                     TreePop();
                 }
+                Spacing();
+                EndChild();
+                PopStyleVar(2);
             }
 
             if (CollapsingHeader("About"))
@@ -501,10 +521,7 @@ int main(int, char **)
 
         // 关闭窗口
         if (!main_window_close_flag)
-        {
-            SaveConfig(0);
             break;
-        }
 
         // 渲染
         ImGui::Render();
@@ -529,15 +546,19 @@ int main(int, char **)
         // glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // Set clear color to transparent
     }
 
-    // 清理
-
-    SDL_JoystickClose(gGameController);
+    SaveConfig(0);
+    
+    // 清理输入
+    if (!input_mode) // 键盘
+        RemoveGlobalHook();
+    else // 手台
+        SDL_JoystickClose(gGameController);
     gGameController = NULL;
 
+    // 清理渲染器
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplSDL2_Shutdown();
     ImGui::DestroyContext();
-
     SDL_GL_DeleteContext(gl_context);
     SDL_DestroyWindow(window);
     SDL_Quit();
@@ -758,12 +779,24 @@ void SetGlobalHook()
 }
 
 void RemoveGlobalHook()
-
 {
     if (hHook)
     {
         UnhookWindowsHookEx(hHook);
         hHook = NULL;
+    }
+}
+
+// 初始化手柄F
+void InitController()
+{
+    if (SDL_NumJoysticks() < 1)
+        msg = std::string("No controller connected.\nPlug your controller and restart this application.");
+    else
+    {
+        gGameController = SDL_JoystickOpen(0);
+        if (gGameController == NULL)
+            msg = std::string("Unable to open controller.");
     }
 }
 
@@ -804,6 +837,9 @@ void LoadConfig()
         show_kps_plot = ini_getl("KPS", "show_kps_plot", 0, ini_file);
         kps_fresh_frame = ini_getl("KPS", "kps_fresh_frame", 30, ini_file);
         kps_plot_length = ini_getl("KPS", "kps_plot_length", 80, ini_file);
+
+        // [input mode]
+        input_mode = ini_getl("input mode", "input_mode", 0, ini_file);
     }
 }
 
@@ -843,6 +879,9 @@ void SaveConfig(bool init_config)
     ini_putl("KPS", "show_kps_plot", show_kps_plot, ini_file);
     ini_putl("KPS", "kps_fresh_frame", kps_fresh_frame, ini_file);
     ini_putl("KPS", "kps_plot_length", kps_plot_length, ini_file);
+
+    // [input mode]
+    ini_putl("input mode", "input_mode", input_mode, ini_file);
 }
 
 void SetDefaultConfig(bool clear_all)
@@ -879,4 +918,7 @@ void SetDefaultConfig(bool clear_all)
     show_kps_plot = false;
     kps_fresh_frame = 30;
     kps_plot_length = 80;
+
+    // [input mode]
+    input_mode = 0;
 }

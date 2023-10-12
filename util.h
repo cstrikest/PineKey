@@ -1,6 +1,6 @@
 #pragma once
 #define SDL_MAIN_HANDLED
-#define VERSION "v1.1.5pre"
+#define VERSION "v1.1.6pre"
 
 #include <map>
 #include <windows.h>
@@ -194,6 +194,9 @@ static bool show_kps_text = false;
 static bool show_kps_plot = false;
 static int kps_fresh_frame = 30;
 static int kps_plot_length = 80;
+
+// [input mode]
+static int input_mode = 0; // 输入模式 0键盘 1控制器
 
 // 全局变量
 const char *ini_file = "./config.ini";
