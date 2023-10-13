@@ -90,21 +90,15 @@ int main(int, char **)
     ImGui_ImplSDL2_InitForOpenGL(window, gl_context);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
+    if (!input_mode) // 键盘
+        SetGlobalHook();
+    else // 手台
+        InitController();
+
     // 主循环
     bool done = false;
-    bool switch_input = true;
     while (!done)
     {
-        // 未设置输入时设置输入
-        if (switch_input)
-        {
-            if (!input_mode) // 键盘
-                SetGlobalHook();
-            else // 手台
-                InitController();
-            switch_input = false;
-        }
-
         // 抓取事件处理
         SDL_Event event;
         while (SDL_PollEvent(&event))
@@ -114,33 +108,68 @@ int main(int, char **)
                 done = true;
             else if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE && event.window.windowID == SDL_GetWindowID(window))
                 done = true;
-            else if (event.type == SDL_JOYAXISMOTION)
+
+            // 手台输入处理
+            if (input_mode)
             {
-                if (event.jaxis.which == 0)
+                if (event.type == SDL_JOYBUTTONDOWN)
                 {
-                    if (event.jaxis.axis == 0)
+                    if (key_to_bind != -1) // 待绑定flag不处于—1：此时bind_button_id的值是按键索引
                     {
-                        if (event.jaxis.value < -4000)
-                            xDir = 1;
-                        else if (event.jaxis.value > 4000)
-                            xDir = -1;
-                        else
-                            xDir = 0;
+                        key_button_config[key_to_bind] = event.jbutton.button;
+                        key_to_bind = -1;
                     }
-                    if (event.jaxis.axis == 1)
+                    else // 没有带绑定按键flag时 处理键盘按下钩子事件
                     {
-                        if (event.jaxis.value < -4000)
-                            yDir = 1;
-                        else if (event.jaxis.value > 4000)
-                            yDir = -1;
-                        else
-                            yDir = 0;
+                        for (int i = 0; i < 9; i++)
+                        {
+                            // 按下的是被绑定的按键 避免连击
+                            if (event.jbutton.button == key_button_config[i] && !is_key_pressed[i])
+                            {
+                                // 触发是否被按下的数组
+                                is_key_pressed[i] = true;
+                                // 增加计数
+                                key_press_count[i] += 1;
+                                _count++;
+                            }
+                        }
                     }
                 }
-            }
-            else if (event.type == SDL_JOYBUTTONDOWN)
-            {
-                ntn = event.jbutton.button;
+                else if (event.type = SDL_JOYBUTTONUP)
+                {
+                    for (int i = 0; i < 9; i++)
+                    {
+                        if (event.jbutton.button == key_button_config[i] && is_key_pressed[i])
+                        {
+                            is_key_pressed[i] = 0;
+                        }
+                    }
+                }
+
+                else if (event.type == SDL_JOYAXISMOTION)
+                {
+                    if (event.jaxis.which == 0)
+                    {
+                        if (event.jaxis.axis == 0)
+                        {
+                            if (event.jaxis.value < -4000)
+                                xDir = 1;
+                            else if (event.jaxis.value > 4000)
+                                xDir = -1;
+                            else
+                                xDir = 0;
+                        }
+                        if (event.jaxis.axis == 1)
+                        {
+                            if (event.jaxis.value < -4000)
+                                yDir = 1;
+                            else if (event.jaxis.value > 4000)
+                                yDir = -1;
+                            else
+                                yDir = 0;
+                        }
+                    }
+                }
             }
         }
 
@@ -154,9 +183,6 @@ int main(int, char **)
 #endif
         // 窗口属性
         const ImGuiViewport *main_viewport = GetMainViewport();
-        // SetNextWindowPos(ImVec2(main_viewport->WorkPos.x + 300, main_viewport->WorkPos.y + 100), ImGuiCond_FirstUseEver);
-        // SetNextWindowSize(ImVec2(500, -1), ImGuiCond_FirstUseEver);
-        // SetNextWindowSizeConstraints(ImVec2(450, -1), ImVec2(450, FLT_MAX));
 
         // style
         ImGuiStyle &style = GetStyle();
@@ -189,6 +215,7 @@ int main(int, char **)
             for (int i = 0; i < 9; i++)
                 count_sum += key_press_count[i];
 
+            // 显示帧率
             char buf[64];
             sprintf(buf, "Pinekey %s FPS: %.1f ###PineKey_main", VERSION, io.Framerate);
 
@@ -325,17 +352,10 @@ int main(int, char **)
                 SameLine();
 
                 // 默认按钮
-                if (Button("overlay default", ImVec2(140, 20)))
+                if (Button("reset"))
                 {
                     SetDefaultConfig(0);
                 }
-
-                // 输入选择
-                Text("input method: ");
-                SameLine();
-                RadioButton("keyboard", &input_mode, 0);
-                SameLine();
-                RadioButton("controller", &input_mode, 1);
 
                 // 柱状图
                 if (TreeNode("Histogram"))
@@ -361,6 +381,7 @@ int main(int, char **)
                     SameLine(GetContentRegionAvail().x - 200);
                     Text("max at %.0f ms, %.0f frames", io.Framerate / press_time_scale * 50 * (1000 / io.Framerate), io.Framerate / press_time_scale * 50);
                 }
+
                 // 按键样式
                 if (TreeNode("Button style"))
                 {
@@ -416,15 +437,50 @@ int main(int, char **)
                 // 按键绑定
                 if (TreeNode("Key config"))
                 {
+                    // 输入选择
+                    Text("input method: ");
+                    SameLine();
+                    RadioButton("keyboard", &input_mode, 0);
+                    SameLine();
+                    RadioButton("controller", &input_mode, 1);
+
+                    if (Button("Refresh"))
+                    {
+                        if (!input_mode) // 键盘
+                        {
+                            SDL_JoystickClose(gGameController);
+                            gGameController = NULL;
+                            SetGlobalHook();
+                        }
+                        else // 手台
+                        {
+                            RemoveGlobalHook();
+                            InitController();
+                        }
+                    }
+
                     BeginTable("key config", 3);
                     for (int i = 0; i < 9; i++)
                     {
                         TableNextRow();
                         TableNextColumn();
-                        if (vkCodeToKeyName.find(key_vkcode_config[i]) == vkCodeToKeyName.end())
-                            Text("Unknown");
+                        if (!input_mode)
+                        {
+                            if (vkCodeToKeyName.find(key_vkcode_config[i]) == vkCodeToKeyName.end())
+                                Text("Unknown");
+                            else
+                                Text(vkCodeToKeyName[key_vkcode_config[i]]);
+                        }
                         else
-                            Text(vkCodeToKeyName[key_vkcode_config[i]]);
+                        {
+                            if (i < 7)
+                                Text("Button %d", key_button_config[i]);
+                            else
+                            {
+                                // TODO: 绑定皿按键的提示文字
+                            }
+                        }
+
                         Dummy(ImVec2(30, 1));
                         TableNextColumn();
                         if (Button((i == 7) ? ("scr L") : ((i == 8) ? ("scr R") : (std::to_string(i + 1).c_str())), ImVec2(70, 20)))
@@ -547,12 +603,10 @@ int main(int, char **)
     }
 
     SaveConfig(0);
-    
+
     // 清理输入
-    if (!input_mode) // 键盘
-        RemoveGlobalHook();
-    else // 手台
-        SDL_JoystickClose(gGameController);
+    RemoveGlobalHook();
+    SDL_JoystickClose(gGameController);
     gGameController = NULL;
 
     // 清理渲染器
@@ -626,6 +680,7 @@ static void KeyUIMaker(ImFont *font_impact)
             PopStyleColor(3);
             SameLine();
         }
+
         for (int i = 0; i < 7; i++)
         {
             bool is_upper_button = i % 2;
@@ -696,7 +751,8 @@ static void KeyUIMaker(ImFont *font_impact)
             if (!is_upper_button)
                 Dummy(ImVec2(1, key_dummy_size));
             if (key_color_style)
-            { // 默认红蓝
+            {
+                // 默认红蓝
                 if (is_key_pressed[i] == 1)
                     PushStyleColor(ImGuiCol_Button, ImVec4(0.9f, 0.0f, 0.0f, 0.9f));
                 else
@@ -780,14 +836,11 @@ void SetGlobalHook()
 
 void RemoveGlobalHook()
 {
-    if (hHook)
-    {
-        UnhookWindowsHookEx(hHook);
-        hHook = NULL;
-    }
+    UnhookWindowsHookEx(hHook);
+    hHook = NULL;
 }
 
-// 初始化手柄F
+// 初始化手柄
 void InitController()
 {
     if (SDL_NumJoysticks() < 1)
@@ -796,7 +849,7 @@ void InitController()
     {
         gGameController = SDL_JoystickOpen(0);
         if (gGameController == NULL)
-            msg = std::string("Unable to open controller.");
+            msg = std::string("Unable to open controller 0.");
     }
 }
 
@@ -811,6 +864,7 @@ void LoadConfig()
         for (int i = 0; i < 9; i++)
         {
             key_vkcode_config[i] = ini_getl("data", (std::string("key_vkcode_config_") + std::to_string(i)).c_str(), -1, ini_file);
+            key_button_config[i] = ini_getl("data", (std::string("key_button_config_") + std::to_string(i)).c_str(), -1, ini_file);
             key_press_count[i] = ini_getl("data", (std::string("key_press_count_") + std::to_string(i)).c_str(), -1, ini_file);
         }
 
@@ -853,6 +907,7 @@ void SaveConfig(bool init_config)
     for (int i = 0; i < 9; i++)
     {
         ini_putl("data", (std::string("key_vkcode_config_") + std::to_string(i)).c_str(), key_vkcode_config[i], ini_file);
+        ini_putl("data", (std::string("key_button_config_") + std::to_string(i)).c_str(), key_button_config[i], ini_file);
         ini_putl("data", (std::string("key_press_count_") + std::to_string(i)).c_str(), key_press_count[i], ini_file);
     }
 
@@ -893,6 +948,7 @@ void SetDefaultConfig(bool clear_all)
         for (int i = 0; i < 9; i++)
         {
             key_vkcode_config[i] = 0;
+            key_button_config[i] = 0;
             key_press_count[i] = 0;
         }
     }

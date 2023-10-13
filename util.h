@@ -7,7 +7,7 @@
 #include <WinUser.h>
 #include <stdio.h>
 #include <iostream>
-#include "minini_13/minIni.h" 
+#include "minini_13/minIni.h"
 #include "imgui.h"
 #include "imgui_impl_sdl2.h"
 #include "imgui_impl_opengl3.h"
@@ -169,6 +169,7 @@ std::map<int, const char *> vkCodeToKeyName = {
 // config
 // [data]
 static int key_vkcode_config[9] = {83, 68, 70, 32, 74, 75, 76, 77, 78};
+static int key_button_config[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 static int key_press_count[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 // [Key overlay]
@@ -206,8 +207,8 @@ bool main_window_close_flag = true;
 bool key_window_close_flag = false;
 ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 0.00f);
 static float _histogram_values[8] = {};
-static bool is_key_pressed[9] = {0, 0, 0, 0, 0, 0, 0, 0,0};
-static int key_pressed_window_time[9] = {0, 0, 0, 0, 0, 0, 0, 0,0};
+static bool is_key_pressed[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+static int key_pressed_window_time[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 static HHOOK hHook = NULL;
 static int key_to_bind = -1; // 待绑定按键编号 -1为无
 static int _frame_count = 0;
@@ -218,7 +219,7 @@ static int count_sum = 0;
 static std::string msg;
 float kpsHistory[500] = {0};
 
-SDL_Joystick* gGameController = NULL;
+SDL_Joystick *gGameController = NULL;
 static int xDir = 0;
 static int yDir = 0;
-static int ntn=  0;
+static int ntn = 0;
