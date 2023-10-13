@@ -78,8 +78,8 @@ int main(int, char **)
     CreateContext();
     ImGuiIO &io = GetIO();
     (void)io;
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
+    // io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
+    // io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
     // 字体
@@ -145,31 +145,6 @@ int main(int, char **)
                         }
                     }
                 }
-
-                else if (event.type == SDL_JOYAXISMOTION)
-                {
-                    if (event.jaxis.which == 0)
-                    {
-                        if (event.jaxis.axis == 0)
-                        {
-                            if (event.jaxis.value < -4000)
-                                xDir = 1;
-                            else if (event.jaxis.value > 4000)
-                                xDir = -1;
-                            else
-                                xDir = 0;
-                        }
-                        if (event.jaxis.axis == 1)
-                        {
-                            if (event.jaxis.value < -4000)
-                                yDir = 1;
-                            else if (event.jaxis.value > 4000)
-                                yDir = -1;
-                            else
-                                yDir = 0;
-                        }
-                    }
-                }
             }
         }
 
@@ -214,6 +189,44 @@ int main(int, char **)
             count_sum = 0;
             for (int i = 0; i < 9; i++)
                 count_sum += key_press_count[i];
+
+            // 处理摇杆
+            if (input_mode)
+            {
+                joystick_current_pos = SDL_JoystickGetAxis(gGameController, joystick_no);
+                int difference = joystick_current_pos - joystick_last_position; // 计算位置差异
+
+                // 处理从-32768到32767和从32767到-32768的跳跃
+                if (difference > joystick_max_position - 1)
+                {
+                    difference -= joystick_max_position * 2;
+                }
+                else if (difference < -joystick_max_position)
+                {
+                    difference += joystick_max_position * 2;
+                }
+
+                joystick_accumulated_difference += abs(difference); // 累积差值
+                joystick_frame_count++;                             // 增加帧计数器
+
+                // 如果在特定帧数内累积差值超过阈值，并且还是未触发状态时，触发动作
+                if (joystick_accumulated_difference >= joystick_scr_threshold && joystick_frame_count <= frame_threshold && (!is_key_pressed[7]))
+                {
+                    is_key_pressed[7] = true;
+                    key_press_count[7] += 1;
+                    _count++;
+                    joystick_accumulated_difference = 0; // 重置累积差值
+                    joystick_frame_count = 0;            // 重置帧计数器
+                }
+                else if (joystick_frame_count > frame_threshold)
+                {
+                    is_key_pressed[7] = false;
+                    joystick_accumulated_difference = 0; // 重置累积差值
+                    joystick_frame_count = 0;            // 重置帧计数器
+                }
+
+                joystick_last_position = joystick_current_pos; // 更新上一次的位置
+            }
 
             // 显示帧率
             char buf[64];
@@ -292,10 +305,10 @@ int main(int, char **)
                 SeparatorText("KPS");
 
                 // 更新KPS
-                if (++_frame_count >= kps_fresh_frame)
+                if (++key_frame_count >= kps_fresh_frame)
                 {
                     kps = (float)_count / ((float)kps_fresh_frame / io.Framerate);
-                    _frame_count = 0;
+                    key_frame_count = 0;
                     _count = 0;
 
                     for (int i = kps_plot_length; i > 0; i--)
@@ -319,9 +332,7 @@ int main(int, char **)
             NewLine();
             Separator();
             Separator();
-            Text("%s == %d", msg.c_str(), ntn);
-            SliderInt("v1", &xDir, -1, 1);
-            SliderInt("v2", &yDir, -1, 1);
+            Text("%s == %d -- %d", msg.c_str(), ntn, SDL_JoystickGetAxis(gGameController, joystick_no));
             Separator();
             Separator();
             Separator();
@@ -332,7 +343,7 @@ int main(int, char **)
             {
                 PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f);
                 PushStyleVar(ImGuiStyleVar_ChildBorderSize, 3.0f);
-                BeginChild("config", ImVec2(0, 150), true, 0);
+                BeginChild("config", ImVec2(0, 180), true, 0);
                 Spacing();
                 // 保存按钮
                 if (Button("Save config", ImVec2(100, 20)))
@@ -387,7 +398,7 @@ int main(int, char **)
                 {
                     Checkbox("separate key overlay", &key_window_mode);
                     SameLine();
-                    Checkbox("show total press count", &key_show_total);
+                    Checkbox("total count", &key_show_total);
                     RadioButton("line style", &key_style, 0);
                     SameLine();
                     RadioButton("IIDX style", &key_style, 1);
@@ -494,6 +505,14 @@ int main(int, char **)
                     EndTable();
                     NewLine();
                     TreePop();
+                }
+
+                if (TreeNode("Scratch"))
+                {
+                    SliderInt("scratch threshold", &joystick_scr_threshold, 0, 5000);
+                    SliderInt("frame threshold", &frame_threshold, 0, 60);
+                    SliderInt("max position", &joystick_max_position, 0, 32768);
+                    SliderInt("scratch input no", &joystick_no, 0, 8);
                 }
 
                 // KPS
@@ -894,6 +913,10 @@ void LoadConfig()
 
         // [input mode]
         input_mode = ini_getl("input mode", "input_mode", 0, ini_file);
+        joystick_no = ini_getl("input mode", "joystick_no", 0, ini_file);
+        joystick_max_position = ini_getl("input mode", "joystick_max_position", 32768, ini_file);
+        joystick_scr_threshold = ini_getl("input mode", "joystick_scr_threshold", 3000, ini_file);
+        frame_threshold = ini_getl("input mode", "frame_threshold", 4, ini_file);
     }
 }
 
@@ -937,6 +960,10 @@ void SaveConfig(bool init_config)
 
     // [input mode]
     ini_putl("input mode", "input_mode", input_mode, ini_file);
+    ini_putl("input mode", "joystick_no", joystick_no, ini_file);
+    ini_putl("input mode", "joystick_max_position", joystick_max_position, ini_file);
+    ini_putl("input mode", "joystick_scr_threshold", joystick_scr_threshold, ini_file);
+    ini_putl("input mode", "frame_threshold", frame_threshold, ini_file);
 }
 
 void SetDefaultConfig(bool clear_all)
@@ -977,4 +1004,8 @@ void SetDefaultConfig(bool clear_all)
 
     // [input mode]
     input_mode = 0;
+    joystick_no = 0;
+    joystick_max_position = 32768; // 最大值
+    joystick_scr_threshold = 3000;
+    frame_threshold = 4;
 }

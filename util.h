@@ -1,6 +1,6 @@
 #pragma once
 #define SDL_MAIN_HANDLED
-#define VERSION "v1.1.6pre"
+#define VERSION "v1.1.8pre"
 
 #include <map>
 #include <windows.h>
@@ -198,6 +198,10 @@ static int kps_plot_length = 80;
 
 // [input mode]
 static int input_mode = 0; // 输入模式 0键盘 1控制器
+static int joystick_no = 0;
+static int joystick_max_position = 32768; // 最大值
+static int joystick_scr_threshold = 3000;
+static int frame_threshold = 4;
 
 // 全局变量
 const char *ini_file = "./config.ini";
@@ -211,7 +215,7 @@ static bool is_key_pressed[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 static int key_pressed_window_time[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 static HHOOK hHook = NULL;
 static int key_to_bind = -1; // 待绑定按键编号 -1为无
-static int _frame_count = 0;
+static int key_frame_count = 0;
 static int _count = 0;
 static float kps = 0;
 static int currentIdx = 0;
@@ -220,6 +224,12 @@ static std::string msg;
 float kpsHistory[500] = {0};
 
 SDL_Joystick *gGameController = NULL;
+static int joystick_current_pos = 0;
+static int joystick_last_position = 0; // 存储上一次的位置
+static int joystick_accumulated_difference = 0; // 累积的差值
+static int joystick_frame_count = 0; // 帧计数器
+
+
 static int xDir = 0;
 static int yDir = 0;
 static int ntn = 0;
