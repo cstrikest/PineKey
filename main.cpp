@@ -1,4 +1,4 @@
-#define DEBUG
+// #define DEBUG
 
 #include "util.h"
 
@@ -18,8 +18,8 @@ void InitController();
 int main(int, char **)
 {
     LoadConfig();
-
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER | SDL_INIT_JOYSTICK) != 0)
+    // if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER | SDL_INIT_JOYSTICK) != 0)
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) != 0)
     {
         printf("Error: %s\n", SDL_GetError());
         return -1;
@@ -64,11 +64,10 @@ int main(int, char **)
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
     SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
     SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL |
-                                                     SDL_WINDOW_RESIZABLE |
                                                      SDL_WINDOW_ALLOW_HIGHDPI |
                                                      SDL_WINDOW_BORDERLESS |
                                                      SDL_WINDOW_HIDDEN);
-    SDL_Window *window = SDL_CreateWindow("Dear ImGui SDL2+OpenGL3 example", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 0, 0, window_flags);
+    SDL_Window *window = SDL_CreateWindow("Dear ImGui SDL2+OpenGL3 example", 0, 0, 0, 0, window_flags);
     SDL_GLContext gl_context = SDL_GL_CreateContext(window);
     SDL_GL_MakeCurrent(window, gl_context);
     SDL_GL_SetSwapInterval(1); // 垂直同步
@@ -78,9 +77,9 @@ int main(int, char **)
     CreateContext();
     ImGuiIO &io = GetIO();
     (void)io;
-    // io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
-    // io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+    io.DisplaySize.x = 100;
+    io.DisplaySize.y = 100;
 
     // 字体
     io.Fonts->AddFontDefault();
@@ -171,8 +170,8 @@ int main(int, char **)
 
         // 窗口flag
         ImGuiWindowFlags main_window_flags = 0;
-        main_window_flags |= ImGuiWindowFlags_NoResize;
         main_window_flags |= ImGuiWindowFlags_AlwaysAutoResize;
+        // main_window_flags |= ImGuiWindowFlags_NoResize;
 
         // 主窗口
         {
@@ -235,13 +234,13 @@ int main(int, char **)
             Begin(buf, &main_window_close_flag, main_window_flags);
 
             // 按键图形
-            if (!key_window_mode)
-            {
-                SeparatorText("Key overlay");
-                Dummy(ImVec2(5, 0));
-                SameLine();
-                KeyUIMaker(font_impact);
-            }
+            // if (!key_window_mode)
+            // {
+            //     SeparatorText("Key overlay");
+            //     Dummy(ImVec2(5, 0));
+            //     SameLine();
+            //     KeyUIMaker(font_impact);
+            // }
 
             // 柱状图
             if (enabled_histogram)
@@ -276,7 +275,7 @@ int main(int, char **)
                         max = _histogram_values[i];
                     temp++;
                 }
-
+                SetNextItemWidth(GetContentRegionAvail().x * 0.4f);
                 PlotHistogram("##values", _histogram_values, 8, 0, NULL, 0.0f, (float)max, ImVec2(200, histogram_height));
                 TableNextColumn();
                 if (play_position)
@@ -295,6 +294,7 @@ int main(int, char **)
                     _histogram_values[i] = (float)key_pressed_window_time[temp];
                     temp++;
                 }
+                SetNextItemWidth(GetContentRegionAvail().x * 0.4f);
                 PlotHistogram("##values", _histogram_values, 8, 0, NULL, 0.0f, io.Framerate / press_time_scale * 50, ImVec2(200, histogram_height));
                 EndTable();
             }
@@ -332,271 +332,252 @@ int main(int, char **)
             NewLine();
             Separator();
             Separator();
-            Text("%s == %d -- %d", msg.c_str(), ntn, SDL_JoystickGetAxis(gGameController, joystick_no));
             Separator();
-            Separator();
-            Separator();
-            NewLine();
+            Spacing();
 
             // 底部下拉菜单
-            if (CollapsingHeader("Config"))
+            PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f);
+            PushStyleVar(ImGuiStyleVar_ChildBorderSize, 3.0f);
+            BeginChild("config", ImVec2(0, 180), true, 0);
+            Spacing();
+            // 保存按钮
+            if (Button("Save config", ImVec2(100, 20)))
             {
-                PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f);
-                PushStyleVar(ImGuiStyleVar_ChildBorderSize, 3.0f);
-                BeginChild("config", ImVec2(0, 180), true, 0);
-                Spacing();
-                // 保存按钮
-                if (Button("Save config", ImVec2(100, 20)))
-                {
-                    SaveConfig(0);
-                }
+                SaveConfig(0);
+            }
+            SameLine();
+
+            // 清空计数按钮
+            if (Button("clear total", ImVec2(100, 20)))
+            {
+                for (int i = 0; i < 9; i++)
+                    key_press_count[i] = 0;
+            }
+            SameLine();
+            HelpMarker("This will clear you all history key press count.");
+            SameLine();
+
+            // 默认按钮
+            if (Button("reset"))
+            {
+                SetDefaultConfig(0);
+            }
+
+            // 柱状图
+            if (TreeNode("Histogram"))
+            {
+                Checkbox("histogram", &enabled_histogram);
+                SameLine();
+                HelpMarker("Enable 2 histogram\n\t- each key's press count\n\t- each key's pressed time");
                 SameLine();
 
-                // 清空计数按钮
-                if (Button("clear total", ImVec2(100, 20)))
-                {
-                    for (int i = 0; i < 9; i++)
-                        key_press_count[i] = 0;
-                }
-                SameLine();
-                HelpMarker("This will clear you all history key press count.");
-                SameLine();
-
-                // 默认按钮
-                if (Button("reset"))
-                {
-                    SetDefaultConfig(0);
-                }
-
-                // 柱状图
-                if (TreeNode("Histogram"))
-                {
-                    Checkbox("histogram", &enabled_histogram);
-                    SameLine();
-                    HelpMarker("Enable 2 histogram\n\t- each key's press count\n\t- each key's pressed time");
-                    SameLine();
-
-                    // 柱状图高度调整
-                    SetNextItemWidth(120);
-                    if (!enabled_histogram)
-                        BeginDisabled();
-                    SliderInt("histogram height", &histogram_height, 32, 512);
-                    if (!enabled_histogram)
-                        EndDisabled();
-
-                    // 按键按下窗口柱状图上限倍率
-                    SliderInt("key press time scale", &press_time_scale, 40, 1250);
-                    SameLine();
-                    HelpMarker("Set the max value of press time graph could show.\ne.g. 150ms 4frames means it tooks 150ms and 4frames to let the yellow bar reach the top.");
-                    Text("");
-                    SameLine(GetContentRegionAvail().x - 200);
-                    Text("max at %.0f ms, %.0f frames", io.Framerate / press_time_scale * 50 * (1000 / io.Framerate), io.Framerate / press_time_scale * 50);
-                }
-
-                // 按键样式
-                if (TreeNode("Button style"))
-                {
-                    Checkbox("separate key overlay", &key_window_mode);
-                    SameLine();
-                    Checkbox("total count", &key_show_total);
-                    RadioButton("line style", &key_style, 0);
-                    SameLine();
-                    RadioButton("IIDX style", &key_style, 1);
-                    SameLine();
+                // 柱状图高度调整
+                SetNextItemWidth(120);
+                if (!enabled_histogram)
                     BeginDisabled();
-                    RadioButton("flat style", &key_style, 2);
+                SliderInt("histogram height", &histogram_height, 32, 512);
+                if (!enabled_histogram)
                     EndDisabled();
-                    SameLine();
-                    HelpMarker("Not supported yet.");
-                    RadioButton("1P", &play_position, 0);
-                    SameLine();
-                    RadioButton("2P", &play_position, 1);
-                    Checkbox("color button", &key_color_style);
-                    SameLine();
-                    Checkbox("show count number on keys", &key_count_num);
-                    TreePop();
+
+                // 按键按下窗口柱状图上限倍率
+                SliderInt("key press time scale", &press_time_scale, 40, 1250);
+                SameLine();
+                HelpMarker("Set the max value of press time graph could show.\ne.g. 150ms 4frames means it tooks 150ms and 4frames to let the yellow bar reach the top.");
+                Text("");
+                SameLine(GetContentRegionAvail().x - 200);
+                Text("max at %.0f ms, %.0f frames", io.Framerate / press_time_scale * 50 * (1000 / io.Framerate), io.Framerate / press_time_scale * 50);
+            }
+
+            // 按键样式
+            if (TreeNode("Button style"))
+            {
+                Checkbox("separate key overlay", &key_window_mode);
+                SameLine();
+                Checkbox("total count", &key_show_total);
+                RadioButton("line style", &key_style, 0);
+                SameLine();
+                RadioButton("IIDX style", &key_style, 1);
+                SameLine();
+                BeginDisabled();
+                RadioButton("flat style", &key_style, 2);
+                EndDisabled();
+                SameLine();
+                HelpMarker("Not supported yet.");
+                RadioButton("1P", &play_position, 0);
+                SameLine();
+                RadioButton("2P", &play_position, 1);
+                Checkbox("color button", &key_color_style);
+                SameLine();
+                Checkbox("show count number on keys", &key_count_num);
+                TreePop();
+            }
+
+            // 按键大小
+            if (TreeNode("Button size & padding"))
+            {
+                int _iidx_button_size[2] = {btn_size_x, btn_size_y};
+                int _iidx_scr_button_size[2] = {sbtn_size_x, sbtn_size_y};
+                SliderInt2("button size", _iidx_button_size, 10, 70);
+                SliderInt2("scr button size", _iidx_scr_button_size, 10, 100);
+
+                if (key_style == 0)
+                {
+                    BeginDisabled();
+                    SliderInt("button dummy size", &key_dummy_size, 0, btn_size_y);
+                    EndDisabled();
+                }
+                else
+                {
+                    SliderInt("button dummy size", &key_dummy_size, 0, btn_size_y);
                 }
 
-                // 按键大小
-                if (TreeNode("Button size & padding"))
-                {
-                    int _iidx_button_size[2] = {btn_size_x, btn_size_y};
-                    int _iidx_scr_button_size[2] = {sbtn_size_x, sbtn_size_y};
-                    SliderInt2("button size", _iidx_button_size, 10, 70);
-                    SliderInt2("scr button size", _iidx_scr_button_size, 10, 100);
+                SameLine();
+                HelpMarker("Set the spaces between those keys.\nOnly at IIDX style.");
+                btn_size_x = _iidx_button_size[0];
+                btn_size_y = _iidx_button_size[1];
+                sbtn_size_x = _iidx_scr_button_size[0];
+                sbtn_size_y = _iidx_scr_button_size[1];
+                TreePop();
+            }
 
-                    if (key_style == 0)
+            // 按键绑定
+            if (TreeNode("Key config"))
+            {
+                // 输入选择
+                Text("input method: ");
+                SameLine();
+                RadioButton("keyboard", &input_mode, 0);
+                SameLine();
+                RadioButton("controller", &input_mode, 1);
+                Text("%s", msg.c_str());
+                Text("Now axis %d with value %d", joystick_axis_no, joystick_current_pos);
+                if (Button("Refresh"))
+                {
+                    if (!input_mode) // 键盘
                     {
-                        BeginDisabled();
-                        SliderInt("button dummy size", &key_dummy_size, 0, btn_size_y);
-                        EndDisabled();
+                        SDL_JoystickClose(gGameController);
+                        gGameController = NULL;
+                        SetGlobalHook();
+                    }
+                    else // 手台
+                    {
+                        RemoveGlobalHook();
+                        InitController();
+                    }
+                }
+
+                BeginTable("key config", 3);
+                for (int i = 0; i < 9; i++)
+                {
+                    TableNextRow();
+                    TableNextColumn();
+                    if (!input_mode)
+                    {
+                        if (vkCodeToKeyName.find(key_vkcode_config[i]) == vkCodeToKeyName.end())
+                            Text("Unknown");
+                        else
+                            Text(vkCodeToKeyName[key_vkcode_config[i]]);
                     }
                     else
                     {
-                        SliderInt("button dummy size", &key_dummy_size, 0, btn_size_y);
-                    }
-
-                    SameLine();
-                    HelpMarker("Set the spaces between those keys.\nOnly at IIDX style.");
-                    btn_size_x = _iidx_button_size[0];
-                    btn_size_y = _iidx_button_size[1];
-                    sbtn_size_x = _iidx_scr_button_size[0];
-                    sbtn_size_y = _iidx_scr_button_size[1];
-                    TreePop();
-                }
-
-                // 按键绑定
-                if (TreeNode("Key config"))
-                {
-                    // 输入选择
-                    Text("input method: ");
-                    SameLine();
-                    RadioButton("keyboard", &input_mode, 0);
-                    SameLine();
-                    RadioButton("controller", &input_mode, 1);
-
-                    if (Button("Refresh"))
-                    {
-                        if (!input_mode) // 键盘
-                        {
-                            SDL_JoystickClose(gGameController);
-                            gGameController = NULL;
-                            SetGlobalHook();
-                        }
-                        else // 手台
-                        {
-                            RemoveGlobalHook();
-                            InitController();
-                        }
-                    }
-
-                    BeginTable("key config", 3);
-                    for (int i = 0; i < 9; i++)
-                    {
-                        TableNextRow();
-                        TableNextColumn();
-                        if (!input_mode)
-                        {
-                            if (vkCodeToKeyName.find(key_vkcode_config[i]) == vkCodeToKeyName.end())
-                                Text("Unknown");
-                            else
-                                Text(vkCodeToKeyName[key_vkcode_config[i]]);
-                        }
+                        if (i < 7)
+                            Text("Button %d", key_button_config[i]);
                         else
                         {
-                            if (i < 7)
-                                Text("Button %d", key_button_config[i]);
-                            else
-                            {
-                                // TODO: 绑定皿按键的提示文字
-                            }
-                        }
-
-                        Dummy(ImVec2(30, 1));
-                        TableNextColumn();
-                        if (Button((i == 7) ? ("scr L") : ((i == 8) ? ("scr R") : (std::to_string(i + 1).c_str())), ImVec2(70, 20)))
-                            key_to_bind = i;
-                        if (key_to_bind == i)
-                        {
-                            TableNextColumn();
-                            Text("PRESS A BUTTON TO BIND.");
+                            // TODO: 绑定皿按键的提示文字
                         }
                     }
-                    EndTable();
-                    NewLine();
-                    TreePop();
-                }
 
-                if (TreeNode("Scratch"))
-                {
-                    SliderInt("scratch threshold", &joystick_scr_threshold, 0, 5000);
-                    SliderInt("frame threshold", &frame_threshold, 0, 60);
-                    SliderInt("max position", &joystick_max_position, 0, 32768);
-                    SliderInt("scratch input no", &joystick_no, 0, 8);
+                    Dummy(ImVec2(30, 1));
+                    TableNextColumn();
+                    if (Button((i == 7) ? ("scr L") : ((i == 8) ? ("scr R") : (std::to_string(i + 1).c_str())), ImVec2(70, 20)))
+                        key_to_bind = i;
+                    if (key_to_bind == i)
+                    {
+                        TableNextColumn();
+                        Text("PRESS A BUTTON TO BIND.");
+                    }
                 }
-
-                // KPS
-                if (TreeNode("KPS config"))
-                {
-                    Checkbox("show kps", &show_kps_text);
-                    SameLine();
-                    Checkbox("show kps graph", &show_kps_plot);
-                    SameLine();
-                    HelpMarker("Enable a plot shows that your kps's changing.");
-                    SetNextItemWidth(200);
-                    SliderInt("kps refresh frame", &kps_fresh_frame, 20, 280);
-                    SameLine();
-                    HelpMarker("Lower value brings faster kps fresh rate but bad accuracy.\nHigher fps monitor could help.");
-                    SetNextItemWidth(200);
-                    SliderInt("kps plot length", &kps_plot_length, 2, 400);
-                    SameLine();
-                    HelpMarker("Set how many kps sample point show in plot.");
-                    TreePop();
-                }
-                Spacing();
-                EndChild();
-                PopStyleVar(2);
+                EndTable();
+                NewLine();
+                TreePop();
             }
 
-            if (CollapsingHeader("About"))
+            if (TreeNode("Scratch"))
             {
-                PushStyleColor(ImGuiCol_Separator, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
-                SeparatorText("ABOUT THIS TOOL:");
-                PopStyleColor();
-                Text("A music game input visualization tool.");
-                Text("With in some cool press counting and plots stuff.");
-                Text("Able with keyboard & contoller input.");
-                TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "VERSION %s", VERSION);
-                Text("Features:");
-                BulletText("Real-time display of pressed keys.");
-                BulletText("Each key press count, total count, realtime KPS");
-                Text("\tand those plot.");
-                BulletText("Statistics on the proportion of times each key is pressed.");
-                BulletText("Calculate the average hold time for each key press.");
-                Separator();
-                TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Pineapple ~2023~");
-                SameLine();
-                HelpMarker("QQ:384065633.\nAdd me or @ me in any group chat :)");
+                SliderInt("scratch threshold", &joystick_scr_threshold, 0, 5000);
+                SliderInt("frame threshold", &frame_threshold, 0, 60);
+                SliderInt("max position", &joystick_max_position, 0, 32768);
+                SliderInt("scratch input no", &joystick_no, 0, 8);
             }
 
-            NewLine();
+            // KPS
+            if (TreeNode("KPS config"))
+            {
+                Checkbox("show kps", &show_kps_text);
+                SameLine();
+                Checkbox("show kps graph", &show_kps_plot);
+                SameLine();
+                HelpMarker("Enable a plot shows that your kps's changing.");
+                SetNextItemWidth(200);
+                SliderInt("kps refresh frame", &kps_fresh_frame, 20, 280);
+                SameLine();
+                HelpMarker("Lower value brings faster kps fresh rate but bad accuracy.\nHigher fps monitor could help.");
+                SetNextItemWidth(200);
+                SliderInt("kps plot length", &kps_plot_length, 2, 400);
+                SameLine();
+                HelpMarker("Set how many kps sample point show in plot.");
+                TreePop();
+            }
+            Spacing();
+            EndChild();
+            PopStyleVar(2);
+            Spacing();
+
+            Separator();
+            Spacing();
+            TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "VERSION %s  ", VERSION);
+            SameLine();
+            TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Pineapple ~2023~");
+            SameLine();
+            HelpMarker("QQ:384065633.\nAdd me or @ me in any group chat :)");
+
             End();
         }
 
         // 弹出模式按键UI
+
+        if (key_window_mode)
         {
-            if (key_window_mode)
-            {
-                ImGuiWindowFlags s = 0;
-                s |= ImGuiWindowFlags_AlwaysAutoResize;
-                s |= ImGuiWindowFlags_NoDecoration;
-                s |= ImGuiWindowFlags_NoNavInputs;
-                s |= ImGuiWindowFlags_NoResize;
-                s |= ImGuiWindowFlags_NoBackground;
-                PushStyleColor(ImGuiCol_WindowBg, ImVec4(0, 0, 0, 0));
+            ImGuiWindowFlags s = 0;
+            s |= ImGuiWindowFlags_AlwaysAutoResize;
+            s |= ImGuiWindowFlags_NoDecoration;
+            s |= ImGuiWindowFlags_NoNavInputs;
+            s |= ImGuiWindowFlags_NoResize;
+            s |= ImGuiWindowFlags_NoBackground;
+            PushStyleColor(ImGuiCol_WindowBg, ImVec4(0, 0, 0, 0));
 
-                Begin("Key overlay", &key_window_close_flag, s);
+            Begin("Key overlay", &key_window_close_flag, s);
 
-                ImGuiStyle &style = GetStyle();
-                style.WindowPadding = ImVec2(14, 2);
-                style.FrameBorderSize = 3;
-                style.FrameRounding = 4;
-                style.GrabRounding = 1;
-                style.SeparatorTextPadding = ImVec2(2, 18);
-                style.WindowBorderSize = 0.0f;            // Remove borders
-                style.WindowRounding = 0.0f;              // Remove rounding
-                style.Colors[ImGuiCol_WindowBg].w = 0.0f; // Make window background transparent
+            ImGuiStyle &style = GetStyle();
+            style.WindowPadding = ImVec2(14, 2);
+            style.FrameBorderSize = 3;
+            style.FrameRounding = 4;
+            style.GrabRounding = 1;
+            style.SeparatorTextPadding = ImVec2(2, 18);
+            style.WindowBorderSize = 0.0f;            // Remove borders
+            style.WindowRounding = 0.0f;              // Remove rounding
+            style.Colors[ImGuiCol_WindowBg].w = 0.0f; // Make window background transparent
 
-                KeyUIMaker(font_impact);
+            KeyUIMaker(font_impact);
 
-                End();
-                PopStyleColor();
-            }
+            End();
+            PopStyleColor();
         }
 
         // 关闭窗口
         if (!main_window_close_flag)
-            break;
+        break;
 
         // 渲染
         ImGui::Render();
@@ -862,6 +843,7 @@ void RemoveGlobalHook()
 // 初始化手柄
 void InitController()
 {
+    msg = "Controller connected";
     if (SDL_NumJoysticks() < 1)
         msg = std::string("No controller connected.\nPlug your controller and restart this application.");
     else

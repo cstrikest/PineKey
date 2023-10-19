@@ -228,8 +228,4 @@ static int joystick_current_pos = 0;
 static int joystick_last_position = 0; // 存储上一次的位置
 static int joystick_accumulated_difference = 0; // 累积的差值
 static int joystick_frame_count = 0; // 帧计数器
-
-
-static int xDir = 0;
-static int yDir = 0;
-static int ntn = 0;
+static int joystick_axis_no = 0;
