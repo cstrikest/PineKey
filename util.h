@@ -1,7 +1,6 @@
 #pragma once
-#pragma comment(lib, "xinput.lib")
-
-#define VERSION "v1.0.2"
+#define SDL_MAIN_HANDLED
+#define VERSION "v1.1.8pre"
 
 #include <map>
 #include <windows.h>
@@ -10,21 +9,14 @@
 #include <iostream>
 #include "minini_13/minIni.h"
 #include "imgui.h"
-#include "imgui_impl_glfw.h"
+#include "imgui_impl_sdl2.h"
 #include "imgui_impl_opengl3.h"
-#include <GLFW/glfw3.h>
-#include <MMSystem.h>
-#include <xinput.h>
-#include <cstring>
-
-#define GL_SILENCE_DEPRECATION
-
+#include <stdio.h>
+#include <SDL.h>
 #if defined(IMGUI_IMPL_OPENGL_ES2)
-#include <GLES2/gl2.h>
-#endif
-
-#if defined(_MSC_VER) && (_MSC_VER >= 1900) && !defined(IMGUI_DISABLE_WIN32_FUNCTIONS)
-#pragma comment(lib, "legacy_stdio_definitions")
+#include <SDL_opengles2.h>
+#else
+#include <SDL_opengl.h>
 #endif
 
 std::map<int, const char *> vkCodeToKeyName = {
@@ -177,6 +169,7 @@ std::map<int, const char *> vkCodeToKeyName = {
 // config
 // [data]
 static int key_vkcode_config[9] = {83, 68, 70, 32, 74, 75, 76, 77, 78};
+static int key_button_config[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 static int key_press_count[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 // [Key overlay]
@@ -203,6 +196,13 @@ static bool show_kps_plot = false;
 static int kps_fresh_frame = 30;
 static int kps_plot_length = 80;
 
+// [input mode]
+static int input_mode = 0; // 输入模式 0键盘 1控制器
+static int joystick_no = 0;
+static int joystick_max_position = 32768; // 最大值
+static int joystick_scr_threshold = 3000;
+static int frame_threshold = 4;
+
 // 全局变量
 const char *ini_file = "./config.ini";
 static float f = 0.0f;
@@ -211,14 +211,25 @@ bool main_window_close_flag = true;
 bool key_window_close_flag = false;
 ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 0.00f);
 static float _histogram_values[8] = {};
-static bool is_key_pressed[9] = {0, 0, 0, 0, 0, 0, 0, 0,0};
-static int key_pressed_window_time[9] = {0, 0, 0, 0, 0, 0, 0, 0,0};
+static bool is_key_pressed[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+static int key_pressed_window_time[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 static HHOOK hHook = NULL;
 static int key_to_bind = -1; // 待绑定按键编号 -1为无
-static int _frame_count = 0;
+static int key_frame_count = 0;
 static int _count = 0;
 static float kps = 0;
 static int currentIdx = 0;
 static int count_sum = 0;
-
+static std::string msg;
 float kpsHistory[500] = {0};
+
+SDL_Joystick *gGameController = NULL;
+static int joystick_current_pos = 0;
+static int joystick_last_position = 0; // 存储上一次的位置
+static int joystick_accumulated_difference = 0; // 累积的差值
+static int joystick_frame_count = 0; // 帧计数器
+
+
+static int xDir = 0;
+static int yDir = 0;
+static int ntn = 0;

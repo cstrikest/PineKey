@@ -1,4 +1,4 @@
-// #define DEBUG
+#define DEBUG
 
 #include "util.h"
 
@@ -13,90 +13,73 @@ void RemoveGlobalHook();
 void LoadConfig();
 void SaveConfig(bool);
 void SetDefaultConfig(bool);
-
-DWORD dwResult;
-XINPUT_STATE state;
-
-static void glfw_error_callback(int error, const char *description)
-{
-    fprintf(stderr, "GLFW Error %d: %s\n", error, description);
-}
+void InitController();
 
 int main(int, char **)
 {
-    std::memset(&state, 0, sizeof(XINPUT_STATE));
-
-    // 循环检测控制器输入
-    // while (1)
-    // {
-    //     // 获取控制器状态
-    //     dwResult = XInputGetState(0, &state);
-
-    //     if (dwResult == ERROR_SUCCESS)
-    //     {
-    //         // 检测按键（例如：A按钮）
-    //         if (state.Gamepad.wButtons & XINPUT_GAMEPAD_A)
-    //         {
-    //             // 如果A按钮被按下，则调用onMyPressDown()
-    //             MessageBox(NULL,"111", "2",MB_OK)
-    //         }
-    //     }
-    //     else
-    //     {
-    //         std::cout << "Controller not connected" << std::endl;
-    //     }
-    // }
-    // 为了示例，我们在此处添加延迟。您可能需要根据需要调整此处的逻辑
-
-    SetGlobalHook();
-
     LoadConfig();
 
-    glfwSetErrorCallback(glfw_error_callback);
-    if (!glfwInit())
-        return 1;
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER | SDL_INIT_JOYSTICK) != 0)
+    {
+        printf("Error: %s\n", SDL_GetError());
+        return -1;
+    }
 
-        // Decide GL+GLSL versions
+    SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS, "1");
+    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
+
+    InitController();
+
+    // Decide GL+GLSL versions
 #if defined(IMGUI_IMPL_OPENGL_ES2)
     // GL ES 2.0 + GLSL 100
     const char *glsl_version = "#version 100";
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
-
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 #elif defined(__APPLE__)
-    // GL 3.2 + GLSL 150
+    // GL 3.2 Core + GLSL 150
     const char *glsl_version = "#version 150";
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // 3.2+ only
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);           // Required on Mac
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG); // Always required on Mac
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
 #else
     // GL 3.0 + GLSL 130
     const char *glsl_version = "#version 130";
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-    // glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
-    // glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // 3.0+ only
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 #endif
-    glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
-    glfwWindowHint(GLFW_DECORATED, GL_FALSE);
-    glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GL_TRUE);
+
+    // From 2.0.18: Enable native IME.
+#ifdef SDL_HINT_IME_SHOW_UI
+    SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
+#endif
 
     // 创建图形上下文
-    GLFWwindow *window = glfwCreateWindow(1, 1, "Dear ImGui GLFW+OpenGL3", nullptr, nullptr);
-    if (window == nullptr)
-        return 1;
-    glfwMakeContextCurrent(window);
-    glfwSwapInterval(1); // 垂直同步
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+    SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL |
+                                                     SDL_WINDOW_RESIZABLE |
+                                                     SDL_WINDOW_ALLOW_HIGHDPI |
+                                                     SDL_WINDOW_BORDERLESS |
+                                                     SDL_WINDOW_HIDDEN);
+    SDL_Window *window = SDL_CreateWindow("Dear ImGui SDL2+OpenGL3 example", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 0, 0, window_flags);
+    SDL_GLContext gl_context = SDL_GL_CreateContext(window);
+    SDL_GL_MakeCurrent(window, gl_context);
+    SDL_GL_SetSwapInterval(1); // 垂直同步
 
     // ImGui上下文
     IMGUI_CHECKVERSION();
     CreateContext();
     ImGuiIO &io = GetIO();
     (void)io;
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
+    // io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
+    // io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
     // 字体
@@ -104,28 +87,77 @@ int main(int, char **)
     ImFont *font_impact = io.Fonts->AddFontFromFileTTF("c:/windows/fonts/impact.ttf", 32.0f);
 
     // 平台、渲染器后端
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplSDL2_InitForOpenGL(window, gl_context);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
+    if (!input_mode) // 键盘
+        SetGlobalHook();
+    else // 手台
+        InitController();
+
     // 主循环
-    while (!glfwWindowShouldClose(window))
+    bool done = false;
+    while (!done)
     {
         // 抓取事件处理
-        glfwPollEvents();
+        SDL_Event event;
+        while (SDL_PollEvent(&event))
+        {
+            ImGui_ImplSDL2_ProcessEvent(&event);
+            if (event.type == SDL_QUIT)
+                done = true;
+            else if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE && event.window.windowID == SDL_GetWindowID(window))
+                done = true;
+
+            // 手台输入处理
+            if (input_mode)
+            {
+                if (event.type == SDL_JOYBUTTONDOWN)
+                {
+                    if (key_to_bind != -1) // 待绑定flag不处于—1：此时bind_button_id的值是按键索引
+                    {
+                        key_button_config[key_to_bind] = event.jbutton.button;
+                        key_to_bind = -1;
+                    }
+                    else // 没有带绑定按键flag时 处理键盘按下钩子事件
+                    {
+                        for (int i = 0; i < 9; i++)
+                        {
+                            // 按下的是被绑定的按键 避免连击
+                            if (event.jbutton.button == key_button_config[i] && !is_key_pressed[i])
+                            {
+                                // 触发是否被按下的数组
+                                is_key_pressed[i] = true;
+                                // 增加计数
+                                key_press_count[i] += 1;
+                                _count++;
+                            }
+                        }
+                    }
+                }
+                else if (event.type = SDL_JOYBUTTONUP)
+                {
+                    for (int i = 0; i < 9; i++)
+                    {
+                        if (event.jbutton.button == key_button_config[i] && is_key_pressed[i])
+                        {
+                            is_key_pressed[i] = 0;
+                        }
+                    }
+                }
+            }
+        }
 
         // 新帧
         ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        NewFrame();
+        ImGui_ImplSDL2_NewFrame();
+        ImGui::NewFrame();
 
 #ifdef DEBUG
         ShowDemoWindow(nullptr);
 #endif
         // 窗口属性
         const ImGuiViewport *main_viewport = GetMainViewport();
-        // SetNextWindowPos(ImVec2(main_viewport->WorkPos.x + 300, main_viewport->WorkPos.y + 100), ImGuiCond_FirstUseEver);
-        // SetNextWindowSize(ImVec2(500, -1), ImGuiCond_FirstUseEver);
-        // SetNextWindowSizeConstraints(ImVec2(450, -1), ImVec2(450, FLT_MAX));
 
         // style
         ImGuiStyle &style = GetStyle();
@@ -158,6 +190,45 @@ int main(int, char **)
             for (int i = 0; i < 9; i++)
                 count_sum += key_press_count[i];
 
+            // 处理摇杆
+            if (input_mode)
+            {
+                joystick_current_pos = SDL_JoystickGetAxis(gGameController, joystick_no);
+                int difference = joystick_current_pos - joystick_last_position; // 计算位置差异
+
+                // 处理从-32768到32767和从32767到-32768的跳跃
+                if (difference > joystick_max_position - 1)
+                {
+                    difference -= joystick_max_position * 2;
+                }
+                else if (difference < -joystick_max_position)
+                {
+                    difference += joystick_max_position * 2;
+                }
+
+                joystick_accumulated_difference += abs(difference); // 累积差值
+                joystick_frame_count++;                             // 增加帧计数器
+
+                // 如果在特定帧数内累积差值超过阈值，并且还是未触发状态时，触发动作
+                if (joystick_accumulated_difference >= joystick_scr_threshold && joystick_frame_count <= frame_threshold && (!is_key_pressed[7]))
+                {
+                    is_key_pressed[7] = true;
+                    key_press_count[7] += 1;
+                    _count++;
+                    joystick_accumulated_difference = 0; // 重置累积差值
+                    joystick_frame_count = 0;            // 重置帧计数器
+                }
+                else if (joystick_frame_count > frame_threshold)
+                {
+                    is_key_pressed[7] = false;
+                    joystick_accumulated_difference = 0; // 重置累积差值
+                    joystick_frame_count = 0;            // 重置帧计数器
+                }
+
+                joystick_last_position = joystick_current_pos; // 更新上一次的位置
+            }
+
+            // 显示帧率
             char buf[64];
             sprintf(buf, "Pinekey %s FPS: %.1f ###PineKey_main", VERSION, io.Framerate);
 
@@ -234,10 +305,10 @@ int main(int, char **)
                 SeparatorText("KPS");
 
                 // 更新KPS
-                if (++_frame_count >= kps_fresh_frame)
+                if (++key_frame_count >= kps_fresh_frame)
                 {
                     kps = (float)_count / ((float)kps_fresh_frame / io.Framerate);
-                    _frame_count = 0;
+                    key_frame_count = 0;
                     _count = 0;
 
                     for (int i = kps_plot_length; i > 0; i--)
@@ -261,6 +332,7 @@ int main(int, char **)
             NewLine();
             Separator();
             Separator();
+            Text("%s == %d -- %d", msg.c_str(), ntn, SDL_JoystickGetAxis(gGameController, joystick_no));
             Separator();
             Separator();
             Separator();
@@ -269,6 +341,10 @@ int main(int, char **)
             // 底部下拉菜单
             if (CollapsingHeader("Config"))
             {
+                PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f);
+                PushStyleVar(ImGuiStyleVar_ChildBorderSize, 3.0f);
+                BeginChild("config", ImVec2(0, 180), true, 0);
+                Spacing();
                 // 保存按钮
                 if (Button("Save config", ImVec2(100, 20)))
                 {
@@ -287,39 +363,42 @@ int main(int, char **)
                 SameLine();
 
                 // 默认按钮
-                if (Button("overlay default", ImVec2(140, 20)))
+                if (Button("reset"))
                 {
                     SetDefaultConfig(0);
                 }
 
                 // 柱状图
-                Checkbox("histogram", &enabled_histogram);
-                SameLine();
-                HelpMarker("Enable 2 histogram\n\t- each key's press count\n\t- each key's pressed time");
-                SameLine();
+                if (TreeNode("Histogram"))
+                {
+                    Checkbox("histogram", &enabled_histogram);
+                    SameLine();
+                    HelpMarker("Enable 2 histogram\n\t- each key's press count\n\t- each key's pressed time");
+                    SameLine();
 
-                // 柱状图高度调整
-                SetNextItemWidth(120);
-                if (!enabled_histogram)
-                    BeginDisabled();
-                SliderInt("histogram height", &histogram_height, 32, 512);
-                if (!enabled_histogram)
-                    EndDisabled();
+                    // 柱状图高度调整
+                    SetNextItemWidth(120);
+                    if (!enabled_histogram)
+                        BeginDisabled();
+                    SliderInt("histogram height", &histogram_height, 32, 512);
+                    if (!enabled_histogram)
+                        EndDisabled();
 
-                // 按键按下窗口柱状图上限倍率
-                SliderInt("key press time scale", &press_time_scale, 40, 1250);
-                SameLine();
-                HelpMarker("Set the max value of press time graph could show.\ne.g. 150ms 4frames means it tooks 150ms and 4frames to let the yellow bar reach the top.");
-                Text("");
-                SameLine(GetContentRegionAvail().x - 200);
-                Text("max at %.0f ms, %.0f frames", io.Framerate / press_time_scale * 50 * (1000 / io.Framerate), io.Framerate / press_time_scale * 50);
+                    // 按键按下窗口柱状图上限倍率
+                    SliderInt("key press time scale", &press_time_scale, 40, 1250);
+                    SameLine();
+                    HelpMarker("Set the max value of press time graph could show.\ne.g. 150ms 4frames means it tooks 150ms and 4frames to let the yellow bar reach the top.");
+                    Text("");
+                    SameLine(GetContentRegionAvail().x - 200);
+                    Text("max at %.0f ms, %.0f frames", io.Framerate / press_time_scale * 50 * (1000 / io.Framerate), io.Framerate / press_time_scale * 50);
+                }
 
                 // 按键样式
                 if (TreeNode("Button style"))
                 {
                     Checkbox("separate key overlay", &key_window_mode);
                     SameLine();
-                    Checkbox("show total press count", &key_show_total);
+                    Checkbox("total count", &key_show_total);
                     RadioButton("line style", &key_style, 0);
                     SameLine();
                     RadioButton("IIDX style", &key_style, 1);
@@ -369,15 +448,50 @@ int main(int, char **)
                 // 按键绑定
                 if (TreeNode("Key config"))
                 {
+                    // 输入选择
+                    Text("input method: ");
+                    SameLine();
+                    RadioButton("keyboard", &input_mode, 0);
+                    SameLine();
+                    RadioButton("controller", &input_mode, 1);
+
+                    if (Button("Refresh"))
+                    {
+                        if (!input_mode) // 键盘
+                        {
+                            SDL_JoystickClose(gGameController);
+                            gGameController = NULL;
+                            SetGlobalHook();
+                        }
+                        else // 手台
+                        {
+                            RemoveGlobalHook();
+                            InitController();
+                        }
+                    }
+
                     BeginTable("key config", 3);
                     for (int i = 0; i < 9; i++)
                     {
                         TableNextRow();
                         TableNextColumn();
-                        if (vkCodeToKeyName.find(key_vkcode_config[i]) == vkCodeToKeyName.end())
-                            Text("Unknown");
+                        if (!input_mode)
+                        {
+                            if (vkCodeToKeyName.find(key_vkcode_config[i]) == vkCodeToKeyName.end())
+                                Text("Unknown");
+                            else
+                                Text(vkCodeToKeyName[key_vkcode_config[i]]);
+                        }
                         else
-                            Text(vkCodeToKeyName[key_vkcode_config[i]]);
+                        {
+                            if (i < 7)
+                                Text("Button %d", key_button_config[i]);
+                            else
+                            {
+                                // TODO: 绑定皿按键的提示文字
+                            }
+                        }
+
                         Dummy(ImVec2(30, 1));
                         TableNextColumn();
                         if (Button((i == 7) ? ("scr L") : ((i == 8) ? ("scr R") : (std::to_string(i + 1).c_str())), ImVec2(70, 20)))
@@ -391,6 +505,14 @@ int main(int, char **)
                     EndTable();
                     NewLine();
                     TreePop();
+                }
+
+                if (TreeNode("Scratch"))
+                {
+                    SliderInt("scratch threshold", &joystick_scr_threshold, 0, 5000);
+                    SliderInt("frame threshold", &frame_threshold, 0, 60);
+                    SliderInt("max position", &joystick_max_position, 0, 32768);
+                    SliderInt("scratch input no", &joystick_no, 0, 8);
                 }
 
                 // KPS
@@ -411,6 +533,9 @@ int main(int, char **)
                     HelpMarker("Set how many kps sample point show in plot.");
                     TreePop();
                 }
+                Spacing();
+                EndChild();
+                PopStyleVar(2);
             }
 
             if (CollapsingHeader("About"))
@@ -471,35 +596,46 @@ int main(int, char **)
 
         // 关闭窗口
         if (!main_window_close_flag)
-        {
-            SaveConfig(0);
             break;
-        }
 
         // 渲染
-        Render();
-        int display_w, display_h;
-        glfwGetFramebufferSize(window, &display_w, &display_h);
-        glViewport(0, 0, display_w, display_h);
-        glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // Set clear color to transparent
-
+        ImGui::Render();
+        glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
+        glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
         glClear(GL_COLOR_BUFFER_BIT);
-        ImGui_ImplOpenGL3_RenderDrawData(GetDrawData());
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+        // Update and Render additional Platform Windows
+        // (Platform functions may change the current OpenGL context, so we save/restore it to make it easier to paste this code elsewhere.
+        //  For this specific demo app we could also call SDL_GL_MakeCurrent(window, gl_context) directly)
         if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
         {
-            UpdatePlatformWindows();
-            RenderPlatformWindowsDefault();
+            SDL_Window *backup_current_window = SDL_GL_GetCurrentWindow();
+            SDL_GLContext backup_current_context = SDL_GL_GetCurrentContext();
+            ImGui::UpdatePlatformWindows();
+            ImGui::RenderPlatformWindowsDefault();
+            SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
         }
-        glfwSwapBuffers(window);
+        SDL_GL_SwapWindow(window);
+
+        // glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // Set clear color to transparent
     }
 
-    // 清理
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    DestroyContext();
-    glfwDestroyWindow(window);
-    glfwTerminate();
+    SaveConfig(0);
+
+    // 清理输入
     RemoveGlobalHook();
+    SDL_JoystickClose(gGameController);
+    gGameController = NULL;
+
+    // 清理渲染器
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplSDL2_Shutdown();
+    ImGui::DestroyContext();
+    SDL_GL_DeleteContext(gl_context);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
+
     return 0;
 }
 
@@ -563,6 +699,7 @@ static void KeyUIMaker(ImFont *font_impact)
             PopStyleColor(3);
             SameLine();
         }
+
         for (int i = 0; i < 7; i++)
         {
             bool is_upper_button = i % 2;
@@ -633,7 +770,8 @@ static void KeyUIMaker(ImFont *font_impact)
             if (!is_upper_button)
                 Dummy(ImVec2(1, key_dummy_size));
             if (key_color_style)
-            { // 默认红蓝
+            {
+                // 默认红蓝
                 if (is_key_pressed[i] == 1)
                     PushStyleColor(ImGuiCol_Button, ImVec4(0.9f, 0.0f, 0.0f, 0.9f));
                 else
@@ -716,12 +854,21 @@ void SetGlobalHook()
 }
 
 void RemoveGlobalHook()
-
 {
-    if (hHook)
+    UnhookWindowsHookEx(hHook);
+    hHook = NULL;
+}
+
+// 初始化手柄
+void InitController()
+{
+    if (SDL_NumJoysticks() < 1)
+        msg = std::string("No controller connected.\nPlug your controller and restart this application.");
+    else
     {
-        UnhookWindowsHookEx(hHook);
-        hHook = NULL;
+        gGameController = SDL_JoystickOpen(0);
+        if (gGameController == NULL)
+            msg = std::string("Unable to open controller 0.");
     }
 }
 
@@ -736,6 +883,7 @@ void LoadConfig()
         for (int i = 0; i < 9; i++)
         {
             key_vkcode_config[i] = ini_getl("data", (std::string("key_vkcode_config_") + std::to_string(i)).c_str(), -1, ini_file);
+            key_button_config[i] = ini_getl("data", (std::string("key_button_config_") + std::to_string(i)).c_str(), -1, ini_file);
             key_press_count[i] = ini_getl("data", (std::string("key_press_count_") + std::to_string(i)).c_str(), -1, ini_file);
         }
 
@@ -762,6 +910,13 @@ void LoadConfig()
         show_kps_plot = ini_getl("KPS", "show_kps_plot", 0, ini_file);
         kps_fresh_frame = ini_getl("KPS", "kps_fresh_frame", 30, ini_file);
         kps_plot_length = ini_getl("KPS", "kps_plot_length", 80, ini_file);
+
+        // [input mode]
+        input_mode = ini_getl("input mode", "input_mode", 0, ini_file);
+        joystick_no = ini_getl("input mode", "joystick_no", 0, ini_file);
+        joystick_max_position = ini_getl("input mode", "joystick_max_position", 32768, ini_file);
+        joystick_scr_threshold = ini_getl("input mode", "joystick_scr_threshold", 3000, ini_file);
+        frame_threshold = ini_getl("input mode", "frame_threshold", 4, ini_file);
     }
 }
 
@@ -775,6 +930,7 @@ void SaveConfig(bool init_config)
     for (int i = 0; i < 9; i++)
     {
         ini_putl("data", (std::string("key_vkcode_config_") + std::to_string(i)).c_str(), key_vkcode_config[i], ini_file);
+        ini_putl("data", (std::string("key_button_config_") + std::to_string(i)).c_str(), key_button_config[i], ini_file);
         ini_putl("data", (std::string("key_press_count_") + std::to_string(i)).c_str(), key_press_count[i], ini_file);
     }
 
@@ -801,6 +957,13 @@ void SaveConfig(bool init_config)
     ini_putl("KPS", "show_kps_plot", show_kps_plot, ini_file);
     ini_putl("KPS", "kps_fresh_frame", kps_fresh_frame, ini_file);
     ini_putl("KPS", "kps_plot_length", kps_plot_length, ini_file);
+
+    // [input mode]
+    ini_putl("input mode", "input_mode", input_mode, ini_file);
+    ini_putl("input mode", "joystick_no", joystick_no, ini_file);
+    ini_putl("input mode", "joystick_max_position", joystick_max_position, ini_file);
+    ini_putl("input mode", "joystick_scr_threshold", joystick_scr_threshold, ini_file);
+    ini_putl("input mode", "frame_threshold", frame_threshold, ini_file);
 }
 
 void SetDefaultConfig(bool clear_all)
@@ -812,6 +975,7 @@ void SetDefaultConfig(bool clear_all)
         for (int i = 0; i < 9; i++)
         {
             key_vkcode_config[i] = 0;
+            key_button_config[i] = 0;
             key_press_count[i] = 0;
         }
     }
@@ -837,4 +1001,11 @@ void SetDefaultConfig(bool clear_all)
     show_kps_plot = false;
     kps_fresh_frame = 30;
     kps_plot_length = 80;
+
+    // [input mode]
+    input_mode = 0;
+    joystick_no = 0;
+    joystick_max_position = 32768; // 最大值
+    joystick_scr_threshold = 3000;
+    frame_threshold = 4;
 }
