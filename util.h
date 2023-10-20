@@ -173,7 +173,6 @@ static int key_button_config[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 static int key_press_count[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 // [Key overlay]
-static bool key_window_mode = 0;
 static bool key_show_total = 1;
 static int key_style = 1;        // 显示按键布局 0一条线 1iidx默认布局 2平铺
 static bool key_color_style = 1; // 显示按键颜色 0单色 1默认红蓝
@@ -186,13 +185,10 @@ static int key_dummy_size = 15; // iidx默认布局横向填充空白大小
 static bool key_count_num = true;
 
 // [histogram]
-static bool enabled_histogram = false;
 static int histogram_height = 130;
 static int press_time_scale = 200;
 
 // [KPS]
-static bool show_kps_text = false;
-static bool show_kps_plot = false;
 static int kps_fresh_frame = 30;
 static int kps_plot_length = 80;
 
@@ -208,7 +204,6 @@ const char *ini_file = "./config.ini";
 static float f = 0.0f;
 static int counter = 0; // fps计算
 bool main_window_close_flag = true;
-bool key_window_close_flag = false;
 ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 0.00f);
 static float _histogram_values[8] = {};
 static bool is_key_pressed[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -229,3 +224,13 @@ static int joystick_last_position = 0; // 存储上一次的位置
 static int joystick_accumulated_difference = 0; // 累积的差值
 static int joystick_frame_count = 0; // 帧计数器
 static int joystick_axis_no = 0;
+
+static void handle_hook_key_press(WPARAM, DWORD);
+static void HelpMarker(const char *desc);
+LRESULT CALLBACK KeyboardProc(int, WPARAM, LPARAM);
+void SetGlobalHook();
+void RemoveGlobalHook();
+void LoadConfig();
+void SaveConfig(bool);
+void SetDefaultConfig(bool);
+void InitController();
