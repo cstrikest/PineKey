@@ -1,6 +1,6 @@
 #pragma once
 #define SDL_MAIN_HANDLED
-#define VERSION "v1.1.8pre"
+#define VERSION "v1.2"
 
 #include <map>
 #include <windows.h>
@@ -173,7 +173,6 @@ static int key_button_config[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 static int key_press_count[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 // [Key overlay]
-static bool key_show_total = 1;
 static int key_style = 1;        // 显示按键布局 0一条线 1iidx默认布局 2平铺
 static bool key_color_style = 1; // 显示按键颜色 0单色 1默认红蓝
 static int play_position = 0;    // iidx游玩位置 0 1p 1 2p

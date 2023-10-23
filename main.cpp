@@ -155,8 +155,6 @@ int main(int, char **)
         // 窗口flag
         ImGuiWindowFlags main_window_flags = 0;
         main_window_flags |= ImGuiWindowFlags_AlwaysAutoResize;
-        // main_window_flags |= ImGuiWindowFlags_NoBackground;
-        // main_window_flags |= ImGuiWindowFlags_NoResize;
 
         // 主窗口
         {
@@ -229,15 +227,7 @@ int main(int, char **)
             sprintf(buf, "Pinekey %s FPS: %.1f ###PineKey_main", VERSION, io.Framerate);
 
             Begin(buf, &main_window_close_flag, main_window_flags);
-
-            PlotLines("", kpsHistory, kps_plot_length, 0, NULL, 0.0f, 48.0f, ImVec2(GetContentRegionAvail().x, 80));
-
-            // Dummy(ImVec2(GetContentRegionAvail().x * 0.35f, 0.0f));
-            // SameLine();
-            // PushFont(font_impact);
-            // Text("KPS: %.1f", kps);
-            // PopFont();
-
+            Spacing();
             // 底部下拉菜单
             // 保存按钮
             if (Button("Save config", ImVec2(100, 20)))
@@ -285,7 +275,6 @@ int main(int, char **)
             // 按键样式
             if (TreeNode("Button style"))
             {
-                Checkbox("total count", &key_show_total);
                 RadioButton("line style", &key_style, 0);
                 SameLine();
                 RadioButton("IIDX style", &key_style, 1);
@@ -418,8 +407,8 @@ int main(int, char **)
                 TreePop();
             }
 
-            Separator();
             Spacing();
+            Separator();
             TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "VERSION %s  ", VERSION);
             SameLine();
             TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Pineapple ~2023~");
@@ -429,10 +418,11 @@ int main(int, char **)
             End();
         }
 
-        ImGuiWindowFlags tool_window_flags = ImGuiWindowFlags_NoNavInputs;
+        ImGuiWindowFlags tool_window_flags = ImGuiWindowFlags_NoNavInputs | ImGuiWindowFlags_NoCollapse;
 
         // 弹出模式按键UI
         Begin("Key overlay", NULL, tool_window_flags);
+
         Spacing();
         BeginGroup();
         switch (key_style)
@@ -566,14 +556,6 @@ int main(int, char **)
             break;
         }
         EndGroup();
-        if (key_show_total)
-        {
-            Dummy(ImVec2(GetContentRegionAvail().x * 0.3f, 0.0f));
-            SameLine();
-            PushFont(font_impact);
-            Text("Total: %d", count_sum);
-            PopFont();
-        }
         Spacing();
         End();
 
@@ -602,11 +584,12 @@ int main(int, char **)
             temp++;
         }
         SetNextItemWidth(GetContentRegionAvail().x * 0.4f);
-        PlotHistogram("##values", _histogram_values, 8, 0, NULL, 0.0f, (float)max, ImVec2(200, histogram_height));
+        PlotHistogram("##values", _histogram_values, 8, 0, NULL, 0.0f, (float)max, ImVec2(GetContentRegionAvail().x, GetContentRegionAvail().y - 5));
         Spacing();
         End();
 
         Begin("Key press time graph", NULL, tool_window_flags);
+        Spacing();
         if (play_position)
         {
             index = 0;
@@ -624,8 +607,25 @@ int main(int, char **)
             temp++;
         }
         SetNextItemWidth(GetContentRegionAvail().x * 0.4f);
-        PlotHistogram("##values", _histogram_values, 8, 0, NULL, 0.0f, io.Framerate / press_time_scale * 50, ImVec2(200, histogram_height));
+        PlotHistogram("##values", _histogram_values, 8, 0, NULL, 0.0f, io.Framerate / press_time_scale * 50, ImVec2(GetContentRegionAvail().x, GetContentRegionAvail().y - 5));
         Spacing();
+        End();
+
+        // KPS窗口
+        Begin("KPS graph", NULL, tool_window_flags);
+        Spacing();
+        PlotLines("", kpsHistory, kps_plot_length, 0, NULL, 0.0f, 48.0f, ImVec2(GetContentRegionAvail().x, GetContentRegionAvail().y - 5));
+        Spacing();
+        End();
+    
+        // 数字窗口
+        Begin("Numbaic Data", NULL, tool_window_flags|ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize);
+        Spacing();
+        PushFont(font_impact);
+        Text("KPS: %.1f", kps);
+        Text("Total: %d", count_sum);
+        PopFont();
+        Text("\t\t\t\t\t");
         End();
 
         // 关闭窗口
@@ -774,7 +774,6 @@ void LoadConfig()
         }
 
         // [Key overlay]
-        key_show_total = ini_getl("overlay", "key_show_total", 1, ini_file);
         key_style = ini_getl("overlay", "key_style", 1, ini_file);
         key_color_style = ini_getl("overlay", "key_color_style", 1, ini_file);
         play_position = ini_getl("overlay", "play_position", 1, ini_file);
@@ -817,7 +816,6 @@ void SaveConfig(bool init_config)
     }
 
     // [Key overlay]
-    ini_putl("overlay", "key_show_total", key_show_total, ini_file);
     ini_putl("overlay", "key_style", key_style, ini_file);
     ini_putl("overlay", "key_color_style", key_color_style, ini_file);
     ini_putl("overlay", "play_position", play_position, ini_file);
@@ -859,7 +857,6 @@ void SetDefaultConfig(bool clear_all)
     }
 
     // [Key overlay]
-    key_show_total = 1;
     key_style = 1;
     key_color_style = 1;
     play_position = 0;
