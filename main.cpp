@@ -347,7 +347,7 @@ int main(int, char **)
                     }
                 }
 
-                BeginTable("key config", 3);
+                BeginTable("key config", 4);
                 for (int i = 0; i < 9; i++)
                 {
                     TableNextRow();
@@ -373,6 +373,11 @@ int main(int, char **)
                     TableNextColumn();
                     if (Button((i == 7) ? ("scr L") : ((i == 8) ? ("scr R") : (std::to_string(i + 1).c_str())), ImVec2(70, 20)))
                         key_to_bind = i;
+                    TableNextColumn();
+                    if(Button("clear"))
+                    {
+                        key_vkcode_config[i] = 0;
+                    }
                     if (key_to_bind == i)
                     {
                         TableNextColumn();
